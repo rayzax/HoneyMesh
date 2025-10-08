@@ -1,4 +1,5 @@
-# HoneyMesh
+# HoneyMesh  <img width="85" height="84" alt="image" src="https://github.com/user-attachments/assets/68ead79b-5888-4a03-a5da-18c2e8647711" />
+
 
 A self-hosted honeypot deployment platform inspired by T-Pot that simplifies honeypot creation and management for security professionals and educational institutions.
 
