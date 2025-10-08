@@ -64,10 +64,12 @@ python3 honeymesh.py
 ```
 
 **Main Menu:**
+
 <img width="635" height="373" alt="image" src="https://github.com/user-attachments/assets/cabe351a-6a05-46e7-9abd-29eaae6dc380" />
 
 
 **Management Console:**
+
 <img width="457" height="373" alt="image" src="https://github.com/user-attachments/assets/322c9ea4-9b8f-405e-938a-5fd0e52c4553" />
 
 
