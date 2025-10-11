@@ -9,10 +9,31 @@ A self-hosted honeypot deployment platform inspired by T-Pot that simplifies hon
 HoneyMesh provides an interactive CLI interface for deploying production-ready honeypots with integrated logging and analysis. The platform focuses on usability improvements and industry-specific customization while leveraging proven open-source honeypot technologies.
 
 ## Features
-- Full stack Python CLI for honeypot orchestration, customization, and deployment
-- Custom Cowrie honeypot builder
-- Honeypot Management Console
-- ELK stack integration for analysis
+HoneyMesh Features
+HoneyMesh is a self-hosted honeypot deployment platform that simplifies honeypot creation and management. Its main features include:
+Full-stack Python CLI: Orchestrate, customize, and deploy honeypots with an interactive command-line interface.
+
+
+Custom Cowrie honeypot builder: Easily configure SSH and Telnet honeypots with custom settings.
+
+
+Honeypot Management Console: Monitor and manage multiple honeypots from a single interface.
+
+
+ELK Stack Integration: Centralized logging and analysis with Elasticsearch, Logstash, and Kibana.
+
+
+Industry-specific customization: Create honeypots that mimic vulnerable servers for specific industries.
+
+
+Logging and analysis: Collect detailed JSON logs including attack metadata, session details, and executed commands.
+
+
+Interactive setup wizard: Guided installation and configuration for quick deployment.
+
+
+Future roadmap: High-interaction honeypots, dedicated VMs per session, clustered deployments, and advanced centralized management.
+
 
 ## Architecture/Design Overview
 
