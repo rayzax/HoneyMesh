@@ -2,7 +2,10 @@
 
 # HoneyMesh
 
-## Table of Contents
+---
+
+<details>
+<summary><strong>Table of Contents</strong></summary>
 
 1. [Overview of HoneyMesh](#overview-of-honeymesh)
    - [Key Functions](#key-functions)
@@ -39,39 +42,56 @@
 11. [Security and Ethical Disclaimers](#security-and-ethical-disclaimers)
 12. [License](#license)
 13. [Acknowledgements / Credits](#acknowledgements--credits)
+
+</details>
+
 ---
 
-## Overview of HoneyMesh
+<details>
+<summary><strong>Overview of HoneyMesh</strong></summary>
 
 HoneyMesh is inspired by **T-Pot** and designed for **security professionals, researchers, and educational institutions**.  
 It provides a simplified, production-ready platform to deploy honeypots while integrating powerful logging and analysis tools.
 
+</details>
+
 ---
 
-###  Key Functions
+<details>
+<summary><strong>Key Funtions</strong></summary>
 
 - **Captures attack activity** on exposed services like SSH and Telnet.  
 - **Stores detailed logs** in JSON format, enriched with GeoIP and session metadata.  
 - **Visualizes attacks and trends** using the integrated **Kibana dashboard**.  
 - **Enables creation of custom honeypots** tailored to specific industries or environments.
 
+</details>
+
 ---
 
-###  Use Cases
+<details>
+<summary><strong>Use Casess</strong></summary>
 
 -  **Cybersecurity research and experimentation** — safely analyze real-world attack behavior.  
 -  **Security training for students and professionals** — simulate live attacks in controlled lab environments.  
 -  **Threat intelligence and incident analysis** — identify attacker methods, tools, and evolving TTPs (Tactics, Techniques, and Procedures).
 
+</details>
+
 ---
 
 
-
-## About HoneyMesh
+<details>
+<summary><strong>About HoneyMesh</strong></summary>
 
 HoneyMesh provides an interactive CLI interface for deploying production-ready honeypots with integrated logging and analysis. The platform focuses on usability improvements and industry-specific customization while leveraging proven open-source honeypot technologies.
 
-## Features
+</details>
+
+---
+
+<details>
+<summary><strong>Features</strong></summary>
 **HoneyMesh Features**
 HoneyMesh is a self-hosted honeypot deployment platform that simplifies honeypot creation and management. Its main features include:
 
@@ -91,7 +111,12 @@ HoneyMesh is a self-hosted honeypot deployment platform that simplifies honeypot
 
 **Future roadmap:** High-interaction honeypots, dedicated VMs per session, clustered deployments, and advanced centralized management.
 
-## Architecture/Design Overview
+</details>
+
+---
+
+<details>
+<summary><strong>Architecture/Design Overview</strong></summary>
 
 <img width="1464" height="341" alt="diagram-export-10-7-2025-8_39_23-PM" src="https://github.com/user-attachments/assets/6f6ac830-6ba4-4ae4-b9c9-3cdcb34868cf" />
 
@@ -110,7 +135,12 @@ HoneyMesh is a self-hosted honeypot deployment platform that simplifies honeypot
 - ELK stack for logging and analysis
 - Python CLI for management
 
-## Installation
+</details>
+
+---
+
+<details>
+<summary><strong>Installation</strong></summary>
 
 **Prerequisites:**
 - Ubuntu 20.04+ (or compatible Linux)
@@ -138,7 +168,12 @@ python3 honeymesh.py
 
 Then follow the interactive wizard to configure and deploy your honeypot.
 
-## Usage
+</details>
+
+---
+
+<details>
+<summary><strong>Usage</strong></summary>
 
 **Starting HoneyMesh:**
 ```bash
@@ -166,8 +201,12 @@ http://localhost:5601
 # View logs
 tail -f ./honeypot-data/logs/cowrie.json
 ```
+</details>
 
-## Configuration
+---
+
+<details>
+<summary><strong>Configuration</strong></summary>
 
 **Port Configuration:**
 - SSH Honeypot: 2222 (configurable during setup)
@@ -211,15 +250,24 @@ Use Kibana to:
 - Monitor session durations
 - Export data for further analysis
 
-## The Future of HoneyMesh
+ </details>
+ 
+---
+
+<details>
+<summary><strong>The Future of HoneyMesh</strong></summary>
 
 **Roadmap:**
 - High-interaction honeypot library with fully dedicated VMs for every attack session
 - Customizable high-interaction virtual machines
 - Clustered deployment of honeypots with centralized management
 
+ </details>
 
-## FAQs
+ ---
+ 
+<details>
+<summary><strong>FAQs</strong></summary>
 
 ---
 
@@ -305,11 +353,16 @@ Future versions of HoneyMesh will include dedicated virtual machines for each at
 <summary><strong>Will HoneyMesh support high-interaction honeypots?</strong></summary>
 
 Yes. The roadmap includes high-interaction honeypots using dedicated VMs and container-based clustering for advanced research use.
+
+</details>
+
+---
 </details>
 
 ---
 
-## Security and Ethical Disclaimers
+<details>
+<summary><strong>Security and Ethical Disclaimers</strong></summary>
 
 **WARNING:**
 
@@ -323,11 +376,21 @@ HoneyMesh deploys honeypots that expose services to attackers. You MUST:
 **Disclaimer:**
 The authors are not responsible for misuse, damages, or legal consequences resulting from the use of this software. By using HoneyMesh, you accept full responsibility for its deployment and operation.
 
-## License
+</details>
+
+---
+
+<details>
+<summary><strong>License</strong></summary>
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
-## Acknowledgements / Credits
+</details>
+
+---
+
+<details>
+<summary><strong>Acknowledgement/Credits</strong></summary>
 
 **Built with:**
 - [Cowrie](https://github.com/cowrie/cowrie) - SSH/Telnet honeypot
@@ -337,5 +400,9 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - [Docker](https://www.docker.com/) - Containerization
 
 **Made for security research and education**
+
+</details>
+
+---
 
 
