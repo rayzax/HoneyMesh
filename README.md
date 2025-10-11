@@ -2,18 +2,32 @@
 
 # HoneyMesh
 
-What is HoneyMesh
-Overview of HoneyMesh
-HoneyMesh is inspired by T-Pot and designed for security professionals, researchers, and educational institutions. It provides a simplified, production-ready platform to deploy honeypots while integrating powerful logging and analysis tools.
-Key Functions:
-   -Captures attack activity on exposed services like SSH and Telnet.
-   -Stores detailed logs in JSON format, enriched with GeoIP and session metadata.
-   -Visualizes attacks and trends using the Kibana dashboard.
-   -Enables users to create custom honeypots tailored to specific industries.
-Use Cases:
-  -Cybersecurity research and experimentation.
-  -Security training for students and professionals.
-  -Threat intelligence gathering and incident analysis.
+---
+
+## Overview of HoneyMesh
+
+HoneyMesh is inspired by **T-Pot** and designed for **security professionals, researchers, and educational institutions**.  
+It provides a simplified, production-ready platform to deploy honeypots while integrating powerful logging and analysis tools.
+
+---
+
+###  Key Functions
+
+- **Captures attack activity** on exposed services like SSH and Telnet.  
+- **Stores detailed logs** in JSON format, enriched with GeoIP and session metadata.  
+- **Visualizes attacks and trends** using the integrated **Kibana dashboard**.  
+- **Enables creation of custom honeypots** tailored to specific industries or environments.
+
+---
+
+###  Use Cases
+
+-  **Cybersecurity research and experimentation** — safely analyze real-world attack behavior.  
+-  **Security training for students and professionals** — simulate live attacks in controlled lab environments.  
+-  **Threat intelligence and incident analysis** — identify attacker methods, tools, and evolving TTPs (Tactics, Techniques, and Procedures).
+
+---
+
 
 
 ## About HoneyMesh
@@ -168,11 +182,11 @@ Use Kibana to:
 - Clustered deployment of honeypots with centralized management
 
 
-## 🧠 4. FAQs – HoneyMesh Frequently Asked Questions
+## FAQs
 
 ---
 
-### 🧩 General Use
+###  General Use
 
 <details>
 <summary><strong>What is HoneyMesh?</strong></summary>
@@ -200,7 +214,7 @@ HoneyMesh logs attacker IPs, commands, login attempts, file downloads, and sessi
 
 ---
 
-### ⚙️ Installation & Platform Support
+###  Installation & Platform Support
 
 <details>
 <summary><strong>Can I deploy HoneyMesh on Windows or Mac?</strong></summary>
