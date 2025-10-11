@@ -2,6 +2,43 @@
 
 # HoneyMesh
 
+## Table of Contents
+
+1. [Overview of HoneyMesh](#overview-of-honeymesh)
+   - [Key Functions](#key-functions)
+   - [Use Cases](#use-cases)
+2. [About HoneyMesh](#about-honeymesh)
+3. [Features](#features)
+4. [Architecture / Design Overview](#architecture--design-overview)
+   - [Data Flow](#data-flow)
+   - [Tech Stack](#tech-stack)
+5. [Installation](#installation)
+   - [Prerequisites](#prerequisites)
+   - [Quick Install](#quick-install)
+6. [Usage](#usage)
+   - [Starting HoneyMesh](#starting-honeymesh)
+   - [Main Menu](#main-menu)
+   - [Management Console](#management-console)
+   - [Accessing Services](#accessing-services)
+7. [Configuration](#configuration)
+   - [Port Configuration](#port-configuration)
+   - [Files](#files)
+   - [Customization](#customization)
+8. [Logging and Analysis](#logging-and-analysis)
+   - [Log Format](#log-format)
+   - [Key Events](#key-events)
+   - [Analysis](#analysis)
+9. [The Future of HoneyMesh](#the-future-of-honeymesh)
+   - [Roadmap](#roadmap)
+10. [FAQs](#faqs)
+    - [General Use](#general-use)
+    - [Installation & Platform Support](#installation--platform-support)
+    - [Configuration & Customization](#configuration--customization)
+    - [Security & Data Handling](#security--data-handling)
+    - [Future Development](#future-development)
+11. [Security and Ethical Disclaimers](#security-and-ethical-disclaimers)
+12. [License](#license)
+13. [Acknowledgements / Credits](#acknowledgements--credits)
 ---
 
 ## Overview of HoneyMesh
@@ -300,3 +337,5 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - [Docker](https://www.docker.com/) - Containerization
 
 **Made for security research and education**
+
+
