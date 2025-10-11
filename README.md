@@ -2,38 +2,43 @@
 
 # HoneyMesh
 
-A self-hosted honeypot deployment platform inspired by T-Pot that simplifies honeypot creation and management for security professionals and educational institutions.
+What is HoneyMesh
+Overview of HoneyMesh
+HoneyMesh is inspired by T-Pot and designed for security professionals, researchers, and educational institutions. It provides a simplified, production-ready platform to deploy honeypots while integrating powerful logging and analysis tools.
+Key Functions:
+   -Captures attack activity on exposed services like SSH and Telnet.
+   -Stores detailed logs in JSON format, enriched with GeoIP and session metadata.
+   -Visualizes attacks and trends using the Kibana dashboard.
+   -Enables users to create custom honeypots tailored to specific industries.
+Use Cases:
+  -Cybersecurity research and experimentation.
+  -Security training for students and professionals.
+  -Threat intelligence gathering and incident analysis.
+
 
 ## About HoneyMesh
 
 HoneyMesh provides an interactive CLI interface for deploying production-ready honeypots with integrated logging and analysis. The platform focuses on usability improvements and industry-specific customization while leveraging proven open-source honeypot technologies.
 
 ## Features
-HoneyMesh Features
+**HoneyMesh Features**
 HoneyMesh is a self-hosted honeypot deployment platform that simplifies honeypot creation and management. Its main features include:
-Full-stack Python CLI: Orchestrate, customize, and deploy honeypots with an interactive command-line interface.
 
+**Full-stack Python CL**I: Orchestrate, customize, and deploy honeypots with an interactive command-line interface.
 
-Custom Cowrie honeypot builder: Easily configure SSH and Telnet honeypots with custom settings.
+**Custom Cowrie honeypot builder**: Easily configure SSH and Telnet honeypots with custom settings.
 
+**Honeypot Management Console:** Monitor and manage multiple honeypots from a single interface.
 
-Honeypot Management Console: Monitor and manage multiple honeypots from a single interface.
+**ELK Stack Integration:** Centralized logging and analysis with Elasticsearch, Logstash, and Kibana.
 
+**Industry-specific customization:** Create honeypots that mimic vulnerable servers for specific industries.
 
-ELK Stack Integration: Centralized logging and analysis with Elasticsearch, Logstash, and Kibana.
+**Logging and analysis:** Collect detailed JSON logs including attack metadata, session details, and executed commands.
 
+**Interactive setup wizard:** Guided installation and configuration for quick deployment.
 
-Industry-specific customization: Create honeypots that mimic vulnerable servers for specific industries.
-
-
-Logging and analysis: Collect detailed JSON logs including attack metadata, session details, and executed commands.
-
-
-Interactive setup wizard: Guided installation and configuration for quick deployment.
-
-
-Future roadmap: High-interaction honeypots, dedicated VMs per session, clustered deployments, and advanced centralized management.
-
+**Future roadmap:** High-interaction honeypots, dedicated VMs per session, clustered deployments, and advanced centralized management.
 
 ## Architecture/Design Overview
 
