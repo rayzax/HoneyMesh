@@ -108,6 +108,10 @@ const config = {
                 label: 'Disclaimer',
                 to: '/docs/disclaimer',
               },
+              {
+                label: 'About Us',
+                to: '/docs/What is HoneyMesh',
+              },
               
             ],
           },
