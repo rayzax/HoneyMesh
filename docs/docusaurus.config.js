@@ -78,7 +78,7 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      image: 'img/HoneyMesh_PictureLogo.png',
       colorMode: {
         respectPrefersColorScheme: true,
       },
@@ -86,7 +86,7 @@ const config = {
         title: 'HoneyMesh',
         logo: {
           alt: 'HoneyMesh logo',
-          src: 'img/logo.svg',
+          src: 'img/HoneyMesh_PictureLogo.png',
         },
         
       },
