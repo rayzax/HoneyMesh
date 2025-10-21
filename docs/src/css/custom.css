@@ -29,3 +29,30 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
+/* Center all footer content */
+.footer {
+  text-align: center;      /* Center text */
+}
+
+.footer .footer__links {
+  display: flex;
+  flex-direction: column;  /* Stack groups vertically */
+  align-items: center;     /* Center horizontally */
+}
+
+.footer .footer__link-items {
+  display: flex;
+  flex-direction: column;  /* Stack links vertically */
+  align-items: center;     /* Center horizontally */
+}
+
+/* Optional: center the newsletter form and inputs */
+.footer-subscribe-form {
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.footer-subscribe-form input,
+.footer-subscribe-form button {
+  margin: 0.25rem 0; /* small spacing vertically */
+}
