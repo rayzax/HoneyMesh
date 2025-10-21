@@ -133,7 +133,7 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
               },
               {
                 label: 'Phone',
-                href: '123-456-7890',
+                href: 'tel:+11234567890',
               },
             ],
           },
