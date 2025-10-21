@@ -153,9 +153,9 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
             </form>
           `,
         },
-            ],
-          },
-        ],
+      ],
+    },
+  ],
         copyright: `Copyright © ${new Date().getFullYear()} HoneyMesh, Inc. Built with Docusaurus.`,
       },
       prism: {
