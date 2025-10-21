@@ -73,68 +73,67 @@ const config = {
       }),
     ],
   ],
-themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */ 
-  ({ // Replace with your project's social card i
-    image: 'img/HoneyMesh_PictureLogo.png', 
-    colorMode: { 
-      respectPrefersColorScheme: true,
-    },
-    navbar: { 
-      title: 'HoneyMesh',
-      logo: { 
-        alt: 'HoneyMesh logo', src: 'img/HoneyMesh_PictureLogo.png',
-      },
-    },
-  
-footer: {
-  style: 'dark',
-  logo: {
-    alt: 'HoneyMesh Logo',
-    src: 'img/HoneyMesh_PictureLogo.png',
-    href: '/',
-    width: 100,
-    height: 100,
+themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */ ({
+  image: 'img/HoneyMesh_PictureLogo.png',
+  colorMode: { 
+    respectPrefersColorScheme: true,
   },
-  links: [
-    {
-      title: 'Navigation and Quick Links',
-      items: [
-        { label: 'Home', to: '/docs/welcome' },
-        { label: 'FAQs', to: '/docs/faqs' },
-        { label: 'About Us', to: '/docs/what-is-honeymesh' },
-      ],
+  navbar: { 
+    title: 'HoneyMesh',
+    logo: { 
+      alt: 'HoneyMesh logo',
+      src: 'img/HoneyMesh_PictureLogo.png',
     },
-    {
-      title: 'Community',
-      items: [
-        { label: 'Instagram', href: 'https://www.instagram.com/honeymeshinc/' },
-        { label: 'Github', href: 'https://github.com/rayzax/HoneyMesh' },
-        { label: 'X', href: 'https://x.com/HoneyMeshInc' },
-      ],
+  },
+  footer: {
+    style: 'dark',
+    logo: {
+      alt: 'HoneyMesh Logo',
+      src: 'img/HoneyMesh_PictureLogo.png',
+      href: '/',
+      width: 100,
+      height: 100,
     },
-    {
-      title: 'Contact Us',
-      items: [
-        { label: 'Email Us', href: 'mailto:honeymeshinc@gmail.com' },
-        { label: 'Call Us', href: 'tel:+11234567890' },
-      ],
-    },
-    {
-      title: 'Newsletter',
-      items: [
-        {
-          html: `
-            <form class="footer-subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
-              <input type="email" placeholder="Your email" required class="footer-email-input" />
-              <button type="submit" class="footer-subscribe-button">Subscribe</button>
-            </form>
-          `,
-        },
-      ],
-    },
-  ],
-  copyright: `Copyright © ${new Date().getFullYear()} HoneyMesh, Inc. Built with Docusaurus.`,
-},
-};
-
+    links: [
+      {
+        title: 'Navigation and Quick Links',
+        items: [
+          { label: 'Home', to: '/docs/welcome' },
+          { label: 'FAQs', to: '/docs/faqs' },
+          { label: 'About Us', to: '/docs/what-is-honeymesh' },
+        ],
+      },
+      {
+        title: 'Community',
+        items: [
+          { label: 'Instagram', href: 'https://www.instagram.com/honeymeshinc/' },
+          { label: 'Github', href: 'https://github.com/rayzax/HoneyMesh' },
+          { label: 'X', href: 'https://x.com/HoneyMeshInc' },
+        ],
+      },
+      {
+        title: 'Contact Us',
+        items: [
+          { label: 'Email Us', href: 'mailto:honeymeshinc@gmail.com' },
+          { label: 'Call Us', href: 'tel:+11234567890' },
+        ],
+      },
+      {
+        title: 'Newsletter',
+        items: [
+          {
+            html: `
+              <form class="footer-subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
+                <input type="email" placeholder="Your email" required class="footer-email-input" />
+                <button type="submit" class="footer-subscribe-button">Subscribe</button>
+              </form>
+            `,
+          },
+        ],
+      },
+    ],
+    copyright: `Copyright © ${new Date().getFullYear()} HoneyMesh, Inc. Built with Docusaurus.`,
+  },
+}),
+  
 export default config;
