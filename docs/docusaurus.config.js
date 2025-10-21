@@ -102,7 +102,7 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
               },
               {
                 label: 'About Us',
-                to: '/docs/What Is HoneyMesh',
+                to: '/docs/What is HoneyMesh',
               },
               
             ],
