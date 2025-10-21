@@ -74,23 +74,7 @@ const config = {
     ],
   ],
 
-  themeConfig:
-    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-    ({
-      // Replace with your project's social card
-      image: 'img/HoneyMesh_PictureLogo.png',
-      colorMode: {
-        respectPrefersColorScheme: true,
-      },
-      navbar: {
-        title: 'HoneyMesh',
-        logo: {
-          alt: 'HoneyMesh logo',
-          src: 'img/HoneyMesh_PictureLogo.png',
-        },
-        
-      },
-footer: {
+ footer: {
   style: 'dark',
   links: [
     {
@@ -170,7 +154,7 @@ footer: {
 
     <p class="footer-bottom">© ${new Date().getFullYear()} HoneyMesh. Built with Docusaurus.</p>
   `,
-  },
+},
       
 
 
