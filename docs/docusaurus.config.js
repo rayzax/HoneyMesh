@@ -142,6 +142,17 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
                 label: 'Call Us',
                 href: 'tel:+11234567890',
               },
+                {
+      title: 'Newsletter',
+      items: [
+        {
+          html: `
+            <form class="footer-subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
+              <input type="email" placeholder="Your email" required class="footer-email-input" />
+              <button type="submit" class="footer-subscribe-button">Subscribe</button>
+            </form>
+          `,
+        },
             ],
           },
         ],
