@@ -158,6 +158,6 @@ footer: {
     },
   ],
   copyright: `Copyright © ${new Date().getFullYear()} HoneyMesh, Inc. Built with Docusaurus.`,
-},
+}
 
 export default config;
