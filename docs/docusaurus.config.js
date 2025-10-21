@@ -131,18 +131,14 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
               },
             ],
           },
-          {
-            title: 'Contact Us',
-            items: [
-              {
-                label: 'Email Us',
-                href: 'mailto:honeymeshinc@gmail.com',
-              },
-              {
-                label: 'Call Us',
-                href: 'tel:+11234567890',
-              },
-                {
+         {
+      title: 'Contact Us',
+      items: [
+        { label: 'Email Us', href: 'mailto:honeymeshinc@gmail.com' },
+        { label: 'Call Us', href: 'tel:+11234567890' },
+      ],
+    },
+    {
       title: 'Newsletter',
       items: [
         {
