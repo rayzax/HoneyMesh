@@ -90,7 +90,7 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
         style: 'dark',
         links: [
           {
-            title: 'Disclaimer',
+            title: 'Navigation and Quick Links',
             items: [
               {
                 label: 'Home',
@@ -101,8 +101,8 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
                 to: '/docs/FAQs'
               },
               {
-                label: 'Disclaimer',
-                to: '/docs/disclaimer',
+                label: 'About Us',
+                to: '/docs/What Is HoneyMesh',
               },
               
             ],
@@ -111,12 +111,12 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
             title: 'Community',
             items: [
               {
-                label: 'Stack Overflow',
+                label: 'Instagram',
                 href: 'https://stackoverflow.com/questions/tagged/docusaurus',
               },
               {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
+                label: 'Github',
+                href: 'https://github.com/rayzax/HoneyMesh',
               },
               {
                 label: 'X',
@@ -125,15 +125,15 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
             ],
           },
           {
-            title: 'More',
+            title: 'Contact Us',
             items: [
               {
-                label: 'Blog',
-                to: '/blog',
+                label: 'Email',
+                href: 'honeymeshinc@gmail.com,
               },
               {
-                label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                label: 'Phone',
+                href: '123-456-7890',
               },
             ],
           },
