@@ -160,6 +160,6 @@ footer: {
       },
     }),
 };
-
+ 
 
 export default config;
