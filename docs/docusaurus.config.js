@@ -119,7 +119,7 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
             items: [
               {
                 label: 'Instagram',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+                href: 'https://www.instagram.com/honeymeshinc/',
               },
               {
                 label: 'Github',
