@@ -75,7 +75,7 @@ const config = {
   ],
 themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */ 
   ({ // Replace with your project's social card i
-    mage: 'img/HoneyMesh_PictureLogo.png', 
+    image: 'img/HoneyMesh_PictureLogo.png', 
     colorMode: { 
       respectPrefersColorScheme: true,
     },
@@ -129,7 +129,7 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
             items: [
               {
                 label: 'Email',
-                href: 'honeymeshinc@gmail.com,
+                href: 'mailto:honeymeshinc@gmail.com',
               },
               {
                 label: 'Phone',
