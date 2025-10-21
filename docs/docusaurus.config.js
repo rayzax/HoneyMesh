@@ -86,86 +86,80 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
       },
     },
   
- footer: {
-      style: 'dark',
-      links: [
-        // Mission statement
+footer: {
+        style: 'dark',
+   logo: {
+    alt: 'HoneyMesh Logo',
+    src: 'img/HoneyMesh_PictureLogo.png',
+    href: '/', // Clicking the logo goes home
+    width: 100,
+    height: 100,
+   },
+        links: [
+          {
+            title: 'Navigation and Quick Links',
+            items: [
+              {
+                label: 'Home',
+                to: '/docs/Welcome'
+              },
+              {
+                label: 'FAQs',
+                to: '/docs/FAQs'
+              },
+              {
+                label: 'About Us',
+                to: '/docs/What is HoneyMesh',
+              },
+              
+            ],
+          },
+          {
+            title: 'Community',
+            items: [
+              {
+                label: 'Instagram',
+                href: 'https://www.instagram.com/honeymeshinc/',
+              },
+              {
+                label: 'Github',
+                href: 'https://github.com/rayzax/HoneyMesh',
+              },
+              {
+                label: 'X',
+                href: 'https://x.com/HoneyMeshInc',
+              },
+            ],
+          },
+         {
+      title: 'Contact Us',
+      items: [
+        { label: 'Email Us', href: 'mailto:honeymeshinc@gmail.com' },
+        { label: 'Call Us', href: 'tel:+11234567890' },
+      ],
+    },
+    {
+      title: 'Newsletter',
+      items: [
         {
-          items: [
-            {
-              html: `
-                <div style="text-align: center; margin-bottom: 20px;">
-                  Empowering cybersecurity professionals, students, and researchers with an accessible, automated, customizable honeypot framework that makes threat intelligence and proactive security practices more accessible.
-                </div>
-              `,
-            },
-          ],
-        },
-        // Logo
-        {
-          items: [
-            {
-              html: `
-                <div style="text-align: center; margin-bottom: 20px;">
-                  <a href="/">
-                    <img src="img/HoneyMesh_PictureLogo.png" alt="HoneyMesh Logo" width="100" height="100" />
-                  </a>
-                </div>
-              `,
-            },
-          ],
-        },
-        // Navigation & Quick Links
-        {
-          title: 'Navigation and Quick Links',
-          items: [
-            { label: 'Home', to: '/docs/welcome' },
-            { label: 'About Us', to: '/docs/what-is-honeymesh' },
-            { label: 'FAQs', to: '/docs/faqs' },
-          ],
-        },
-        // Contact Us
-        {
-          title: 'Contact Us',
-          items: [
-            { label: 'Email Us', href: 'mailto:honeymeshinc@gmail.com' },
-            { label: 'Call Us', href: 'tel:+11234567890' },
-            { label: 'Support Hours: M-F 9am-5pm', href: '#' },
-          ],
-        },
-        // Connect With Us
-        {
-          title: 'Connect With Us',
-          items: [
-            { label: 'GitHub', href: 'https://github.com/rayzax/HoneyMesh' },
-            { label: 'X', href: 'https://x.com/HoneyMeshInc' },
-            { label: 'Instagram', href: 'https://www.instagram.com/honeymeshinc/' },
-          ],
-        },
-        // Newsletter
-        {
-          title: 'Newsletter',
-          items: [
-            {
-              html: `
-                <div style="text-align: center; margin-top: 10px;">
-                  <form class="footer-subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
-                    <input type="email" placeholder="Your email" required style="padding: 6px 10px; margin-right: 6px; border-radius: 4px; border: none;" />
-                    <button type="submit" style="padding: 6px 12px; border-radius: 4px; border: none; background-color: #6366F1; color: white; cursor: pointer;">Subscribe</button>
-                  </form>
-                </div>
-              `,
-            },
-          ],
+          html: `
+            <form class="footer-subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
+              <input type="email" placeholder="Your email" required class="footer-email-input" />
+              <button type="submit" class="footer-subscribe-button">Subscribe</button>
+            </form>
+          `,
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} HoneyMesh, Inc. Built with Docusaurus.`,
     },
-    prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
-    },
-  }),
+  ],
+        copyright: `Copyright © ${new Date().getFullYear()} HoneyMesh, Inc. Built with Docusaurus.`,
+      },
+      prism: {
+        theme: prismThemes.github,
+        darkTheme: prismThemes.dracula,
+      },
+    }),
 };
+
 
 export default config;
