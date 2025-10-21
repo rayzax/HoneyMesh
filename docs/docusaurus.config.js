@@ -135,10 +135,6 @@ footer: {
   ],
   copyright: `Copyright © ${new Date().getFullYear()} HoneyMesh, Inc. Built with Docusaurus.`,
 },
-prism: {
-  theme: prismThemes.github,
-  darkTheme: prismThemes.dracula,
-},
- 
+};
 
-module.exports = config;
+export default config;
