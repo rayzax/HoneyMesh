@@ -84,6 +84,7 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
       logo: { 
         alt: 'HoneyMesh logo', src: 'img/HoneyMesh_PictureLogo.png',
       },
+    },
   
   footer: {
         style: 'dark',
