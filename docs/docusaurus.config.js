@@ -88,6 +88,13 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
   
  footer: {
         style: 'dark',
+   logo: {
+    alt: 'HoneyMesh Logo',
+    src: 'img/HoneyMesh_PictureLogo.png',
+    href: '/', // Clicking the logo goes home
+    width: 100,
+    height: 100,
+   },
         links: [
           {
             title: 'Navigation and Quick Links',
