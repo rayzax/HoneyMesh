@@ -86,58 +86,65 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
       },
     },
   
-footer: {
-  style: 'dark',
-  links: [
-    {
-      title: 'Navigation',
-      items: [
-        { label: 'Home', to: '/' },
-        { label: 'About Us', to: '/docs/about' },
-        { label: 'FAQs', to: '/docs/faqs' },
-      ],
-    },
-    {
-      title: 'Contact Us',
-      items: [
-        {
-          html: `
-            <p><a class="footer-contact-button" href="mailto:support@honeymesh.io">Contact Us</a></p>
-            <p>123 Cybersecurity Blvd, Suite 100</p>
-            <p>Support Hours: Mon-Fri 9am-6pm</p>
-          `,
-        },
-      ],
-    },
-    {
-      title: 'Connect With Us',
-      items: [
-        {
-          html: `
-            <p>
-              <a href="https://github.com/rayzax/HoneyMesh" target="_blank" aria-label="GitHub">GitHub</a> |
-              <a href="https://x.com/honeymesh" target="_blank" aria-label="X">X</a> |
-              <a href="https://instagram.com/honeymesh" target="_blank" aria-label="Instagram">Instagram</a>
-            </p>
-          `,
-        },
-      ],
-    },
-    {
-      title: 'Newsletter',
-      items: [
-        {
-          html: `
-            <form class="footer-subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
-              <input type="email" placeholder="Your email" required class="footer-email-input" />
-              <button type="submit" class="footer-subscribe-button">Subscribe</button>
-            </form>
-          `,
-        },
-      ],
-    },
-  ],
-  copyright: `Copyright © ${new Date().getFullYear()} HoneyMesh. Built with Docusaurus.`,
-},
+ footer: {
+        style: 'dark',
+        links: [
+          {
+            title: 'Disclaimer',
+            items: [
+              {
+                label: 'Home',
+                to: '/docs/Welcome'
+              },
+              {
+                label: 'FAQs',
+                to: '/docs/FAQs'
+              },
+              {
+                label: 'Disclaimer',
+                to: '/docs/disclaimer',
+              },
+              
+            ],
+          },
+          {
+            title: 'Community',
+            items: [
+              {
+                label: 'Stack Overflow',
+                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              },
+              {
+                label: 'Discord',
+                href: 'https://discordapp.com/invite/docusaurus',
+              },
+              {
+                label: 'X',
+                href: 'https://x.com/docusaurus',
+              },
+            ],
+          },
+          {
+            title: 'More',
+            items: [
+              {
+                label: 'Blog',
+                to: '/blog',
+              },
+              {
+                label: 'GitHub',
+                href: 'https://github.com/facebook/docusaurus',
+              },
+            ],
+          },
+        ],
+        copyright: `Copyright © ${new Date().getFullYear()} HoneyMesh, Inc. Built with Docusaurus.`,
+      },
+      prism: {
+        theme: prismThemes.github,
+        darkTheme: prismThemes.dracula,
+      },
+    }),
+};
 
 export default config;
