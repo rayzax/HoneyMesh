@@ -88,41 +88,30 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
   
 footer: {
   style: 'dark',
+  logo: {
+    alt: 'HoneyMesh Logo',
+    src: 'img/HoneyMesh_PictureLogo.png',
+    href: '/',
+    width: 100,
+    height: 100,
+  },
   links: [
-    // Logo
-    {
-      title: '',
-      items: [
-        {
-          html: `
-            <div style="text-align:center; margin-bottom:1rem;">
-              <a href="/">
-                <img src="img/HoneyMesh_PictureLogo.png" alt="HoneyMesh Logo" width="100" height="100"/>
-              </a>
-            </div>
-          `,
-        },
-      ],
-    },
-    // Navigation
     {
       title: 'Navigation and Quick Links',
       items: [
         { label: 'Home', to: '/docs/welcome' },
-        { label: 'About Us', to: '/docs/what-is-honeymesh' },
         { label: 'FAQs', to: '/docs/faqs' },
+        { label: 'About Us', to: '/docs/what-is-honeymesh' },
       ],
     },
-    // Community
     {
       title: 'Community',
       items: [
         { label: 'Instagram', href: 'https://www.instagram.com/honeymeshinc/' },
-        { label: 'GitHub', href: 'https://github.com/rayzax/HoneyMesh' },
+        { label: 'Github', href: 'https://github.com/rayzax/HoneyMesh' },
         { label: 'X', href: 'https://x.com/HoneyMeshInc' },
       ],
     },
-    // Contact
     {
       title: 'Contact Us',
       items: [
@@ -130,18 +119,15 @@ footer: {
         { label: 'Call Us', href: 'tel:+11234567890' },
       ],
     },
-    // Newsletter
     {
       title: 'Newsletter',
       items: [
         {
           html: `
-            <div style="text-align:center;">
-              <form class="footer-subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
-                <input type="email" placeholder="Your email" required class="footer-email-input" />
-                <button type="submit" class="footer-subscribe-button">Subscribe</button>
-              </form>
-            </div>
+            <form class="footer-subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
+              <input type="email" placeholder="Your email" required class="footer-email-input" />
+              <button type="submit" class="footer-subscribe-button">Subscribe</button>
+            </form>
           `,
         },
       ],
@@ -149,6 +135,10 @@ footer: {
   ],
   copyright: `Copyright © ${new Date().getFullYear()} HoneyMesh, Inc. Built with Docusaurus.`,
 },
+prism: {
+  theme: prismThemes.github,
+  darkTheme: prismThemes.dracula,
+},
  
 
-export default config;
+module.exports = config;
