@@ -160,6 +160,3 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */ ({
 
 
 export default config;
-
-  
-export default config;
