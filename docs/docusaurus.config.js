@@ -135,11 +135,11 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
             title: 'Contact Us',
             items: [
               {
-                label: 'Email',
+                label: 'Email Us',
                 href: 'mailto:honeymeshinc@gmail.com',
               },
               {
-                label: 'Phone',
+                label: 'Call Us',
                 href: 'tel:+11234567890',
               },
             ],
