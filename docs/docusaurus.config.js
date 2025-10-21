@@ -86,79 +86,74 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
       },
     },
   
- footer: {
-        style: 'dark',
-   logo: {
-    alt: 'HoneyMesh Logo',
-    src: 'img/HoneyMesh_PictureLogo.png',
-    href: '/', // Clicking the logo goes home
-    width: 100,
-    height: 100,
-   },
-        links: [
-          {
-            title: 'Navigation and Quick Links',
-            items: [
-              {
-                label: 'Home',
-                to: '/docs/Welcome'
-              },
-              {
-                label: 'FAQs',
-                to: '/docs/FAQs'
-              },
-              {
-                label: 'About Us',
-                to: '/docs/What is HoneyMesh',
-              },
-              
-            ],
-          },
-          {
-            title: 'Community',
-            items: [
-              {
-                label: 'Instagram',
-                href: 'https://www.instagram.com/honeymeshinc/',
-              },
-              {
-                label: 'Github',
-                href: 'https://github.com/rayzax/HoneyMesh',
-              },
-              {
-                label: 'X',
-                href: 'https://x.com/HoneyMeshInc',
-              },
-            ],
-          },
-         {
-      title: 'Contact Us',
-      items: [
-        { label: 'Email Us', href: 'mailto:honeymeshinc@gmail.com' },
-        { label: 'Call Us', href: 'tel:+11234567890' },
-      ],
+ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */ ({
+  image: 'img/HoneyMesh_PictureLogo.png',
+  colorMode: { 
+    respectPrefersColorScheme: true,
+  },
+  navbar: { 
+    title: 'HoneyMesh',
+    logo: { 
+      alt: 'HoneyMesh logo', 
+      src: 'img/HoneyMesh_PictureLogo.png',
     },
-    {
-      title: 'Newsletter',
-      items: [
-        {
-          html: `
-            <form class="footer-subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
-              <input type="email" placeholder="Your email" required class="footer-email-input" />
-              <button type="submit" class="footer-subscribe-button">Subscribe</button>
-            </form>
-          `,
-        },
-      ],
+  },
+  footer: {
+    style: 'dark',
+    logo: {
+      alt: 'HoneyMesh Logo',
+      src: 'img/HoneyMesh_PictureLogo.png',
+      href: '/',
+      width: 100,
+      height: 100,
     },
-  ],
-        copyright: `Copyright © ${new Date().getFullYear()} HoneyMesh, Inc. Built with Docusaurus.`,
+    links: [
+      {
+        title: 'Navigation and Quick Links',
+        items: [
+          { label: 'Home', to: '/docs/welcome' },
+          { label: 'About Us', to: '/docs/what-is-honeymesh' },
+          { label: 'FAQs', to: '/docs/faqs' },
+        ],
       },
-      prism: {
-        theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
+      {
+        title: 'Contact Us',
+        items: [
+          { label: 'Email Us', href: 'mailto:honeymeshinc@gmail.com' },
+          { label: 'Call Us', href: 'tel:+11234567890' },
+          { label: 'Support Hours: M-F 9am-5pm', href: '#' },
+        ],
       },
-    }),
-};
-
+      {
+        title: 'Connect With Us',
+        items: [
+          { label: 'GitHub', href: 'https://github.com/rayzax/HoneyMesh' },
+          { label: 'X', href: 'https://x.com/HoneyMeshInc' },
+          { label: 'Instagram', href: 'https://www.instagram.com/honeymeshinc/' },
+        ],
+      },
+      {
+        title: 'Newsletter',
+        items: [
+          {
+            html: `
+              <div class="footer-subscribe-wrapper">
+                <form class="footer-subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
+                  <input type="email" placeholder="Your email" required class="footer-email-input" />
+                  <button type="submit" class="footer-subscribe-button">Subscribe</button>
+                </form>
+              </div>
+            `,
+          },
+        ],
+      },
+    ],
+    copyright: `Copyright © ${new Date().getFullYear()} HoneyMesh, Inc. Built with Docusaurus.`,
+  },
+  prism: {
+    theme: prismThemes.github,
+    darkTheme: prismThemes.dracula,
+  },
+}),
+    
 export default config;
