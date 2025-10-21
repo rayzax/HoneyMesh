@@ -127,7 +127,7 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
               },
               {
                 label: 'X',
-                href: 'https://x.com/docusaurus',
+                href: 'https://x.com/HoneyMeshInc',
               },
             ],
           },
