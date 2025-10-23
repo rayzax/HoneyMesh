@@ -28,6 +28,50 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+/* Center FAQ layout */
+.faq-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Section spacing and soft fade-in */
+.faq-section {
+  margin-bottom: 2.5rem;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Style the answers */
+.faq-answer {
+  background-color: var(--ifm-color-emphasis-100);
+  color: var(--ifm-font-color-base);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  text-align: left;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  line-height: 1.7;
+  margin: 0.5rem 0 1.5rem;
+}
+
+/* Add icons and header separation */
+h2, h3 {
+  color: var(--ifm-color-primary);
+  margin-bottom: 0.75rem;
+}
+
+/* Smooth fade animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 
 
