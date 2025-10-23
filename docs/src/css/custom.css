@@ -171,6 +171,29 @@ h3 {
   font-size: 1.05rem;
   color: var(--ifm-font-color-base);
 }
+.overview-section {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  text-align: left;
+  line-height: 1.8;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.overview-section h2 {
+  color: var(--ifm-color-primary);
+  border-bottom: 3px solid var(--ifm-color-primary);
+  display: inline-block;
+  padding-bottom: 0.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 1.8rem;
+}
+
+.overview-section p {
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+  color: var(--ifm-font-color-base);
+}
 
 
 
