@@ -1,4 +1,4 @@
-# 🛡️ HoneyMesh FAQs
+#  HoneyMesh FAQs
 
 <div class="faq-container">
 
@@ -53,7 +53,8 @@ Windows or Mac users can run it using a <strong>Linux virtual machine</strong> o
 
 ###  Can I customize honeypots for specific industries?
 <p class="faq-answer">
-Yes. HoneyMesh supports building <strong>custom honeypots and filesystems</strong> that mimic vulnerable servers used in specific industries.
+Yes. HoneyMesh supports building <strong>custom honeypots and filesystems</strong> that mimic vulnerable servers 
+used in specific industries.
 </p>
 
 </div>
@@ -102,4 +103,5 @@ Yes. The roadmap includes <strong>high-interaction honeypots</strong> using dedi
 </div>
 
 </div>
+
 
