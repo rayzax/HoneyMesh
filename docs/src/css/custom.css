@@ -81,6 +81,43 @@ h3 {
   }
 }
 
+.features-section {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  text-align: left;
+  line-height: 1.8;
+}
+
+.features-section h2 {
+  color: var(--ifm-color-primary);
+  border-bottom: 3px solid var(--ifm-color-primary);
+  display: inline-block;
+  padding-bottom: 0.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 1.8rem;
+}
+
+.features-section p {
+  font-size: 1.05rem;
+  margin-bottom: 1.25rem;
+  color: var(--ifm-font-color-base);
+}
+
+.features-list {
+  list-style: disc;
+  margin-left: 1.5rem;
+  padding-left: 1rem;
+}
+
+.features-list li {
+  margin-bottom: 0.8rem;
+}
+
+.features-list strong {
+  color: var(--ifm-color-primary);
+}
+
 
 
 
