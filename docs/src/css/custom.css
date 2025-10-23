@@ -35,6 +35,33 @@
   text-align: left;
   padding: 2rem;
 }
+.about-section {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  text-align: left;
+  line-height: 1.8;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.about-section h2 {
+  color: var(--ifm-color-primary);
+  border-bottom: 3px solid var(--ifm-color-primary);
+  display: inline-block;
+  padding-bottom: 0.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 1.8rem;
+}
+
+.about-section p {
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+  color: var(--ifm-font-color-base);
+}
+section {
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  padding-bottom: 2rem;
+}
 
 /* Section spacing and soft fade-in */
 .faq-section {
