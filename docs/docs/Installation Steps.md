@@ -1,5 +1,5 @@
-<section class="installation-section">
-  <h2><strong>Installation</strong></h2>
+<section class="installation-section" id="installation-steps">
+  <h2><strong>Installation Steps</strong></h2>
 
   <h3>Prerequisites:</h3>
   <ul class="installation-list">
