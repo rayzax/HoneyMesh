@@ -14,4 +14,4 @@
     Users should deploy HoneyMesh in **isolated, controlled environments**, and never expose it 
     to production or sensitive networks without proper safeguards.
   </p>
-</section>DISCLAIMER
+
