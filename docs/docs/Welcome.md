@@ -28,13 +28,14 @@
   </p>
 
   <p>
-    <a class="welcome-button" href = "docs/Insatllation Steps">Get Started →</a>
+    <a class="welcome-button" href="docs/installation#installation-steps">Installation Steps →</a>
   </p>
 
   <p class="feature-tags">
     ELK stack for logging and analysis &nbsp;|&nbsp; Python CLI for management
   </p>
 </section>
+
 
 
 
