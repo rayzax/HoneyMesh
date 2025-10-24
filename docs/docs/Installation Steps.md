@@ -28,3 +28,58 @@ python3 honeymesh.py
 
   <p>Then follow the interactive wizard to configure and deploy your honeypot.</p>
 </section>
+
+<section class="configuration-section">
+  <h2><strong>Configuration & Logging</strong></h2>
+
+  <h3>Port Configuration:</h3>
+  <ul class="config-list">
+    <li><strong>SSH Honeypot:</strong> 2222 (configurable during setup)</li>
+    <li><strong>Telnet Honeypot:</strong> 2223 (optional)</li>
+    <li><strong>Kibana Dashboard:</strong> 5601 (configurable)</li>
+    <li><strong>Elasticsearch:</strong> 9200</li>
+  </ul>
+
+  <h3>Files:</h3>
+  <ul class="config-list">
+    <li><code>honeypot-data/config/cowrie.cfg</code> - Cowrie configuration</li>
+    <li><code>honeypot-data/docker-compose.yml</code> - Service definitions</li>
+    <li><code>honeypot-data/elk-config/</code> - ELK stack configurations</li>
+  </ul>
+
+  <h3>Customization:</h3>
+  <ul class="config-list">
+    <li>Modify hostname and SSH banner in <code>cowrie.cfg</code></li>
+    <li>Choose from a library of custom honeypots that mimic vulnerable industry-specific servers</li>
+    <li>Build your own custom honeypots and filesystems</li>
+    <li>Configure log retention and storage paths</li>
+  </ul>
+
+  <h3>Logging and Analysis:</h3>
+  <p>All events are logged as JSON with:</p>
+  <ul class="config-list">
+    <li>Timestamp</li>
+    <li>Source IP with GeoIP data</li>
+    <li>Event type (login, command, file transfer)</li>
+    <li>Session details</li>
+    <li>Username/password attempts</li>
+    <li>Commands executed</li>
+  </ul>
+
+  <p>Key Events:</p>
+  <ul class="config-list">
+    <li><code>cowrie.login.success/failed</code> - Authentication attempts</li>
+    <li><code>cowrie.command.input</code> - Commands executed</li>
+    <li><code>cowrie.session.file_download</code> - Downloaded files</li>
+    <li><code>cowrie.session.connect/closed</code> - Connection events</li>
+  </ul>
+
+  <p>Analysis using Kibana:</p>
+  <ul class="config-list">
+    <li>Map attack origins geographically</li>
+    <li>Identify common credentials used</li>
+    <li>Track command execution patterns</li>
+    <li>Monitor session durations</li>
+    <li>Export data for further analysis</li>
+  </ul>
+</section>
