@@ -83,3 +83,30 @@ python3 honeymesh.py
     <li>Export data for further analysis</li>
   </ul>
 </section>
+<section class="usage-section">
+  <h2><strong>Usage</strong></h2>
+
+  <h3>Starting HoneyMesh:</h3>
+  <pre><code class="language-bash">python3 honeymesh.py</code></pre>
+
+  <h3>Main Menu:</h3>
+  <p><em>Insert image of the main menu here</em></p>
+  <img src="img/main-menu.png" alt="HoneyMesh Main Menu" class="usage-image">
+
+  <h3>Management Console:</h3>
+  <p><em>Insert image of the management console here</em></p>
+  <img src="img/management-console.png" alt="HoneyMesh Management Console" class="usage-image">
+
+  <h3>Accessing Services:</h3>
+  <pre><code class="language-bash">
+# SSH honeypot
+ssh user@localhost -p 2222
+
+# Kibana dashboard
+http://localhost:5601
+
+# View logs
+tail -f ./honeypot-data/logs/cowrie.json
+  </code></pre>
+</section>
+
