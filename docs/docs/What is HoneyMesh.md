@@ -30,11 +30,6 @@
 section class="architecture-section">
   <h2><strong>Architecture / Design Overview</strong></h2>
 
-  <div class="architecture-diagram">
-    <img src="img/diagram-export-10-7-2025-8_39_23-PM.png" alt="HoneyMesh Architecture Diagram" />
-    <p class="diagram-caption">Figure: HoneyMesh System Architecture and Data Flow</p>
-  </div>
-
   <h3>Data Flow:</h3>
   <ol class="architecture-list">
     <li>Attacker connects to honeypot</li>
@@ -53,5 +48,6 @@ section class="architecture-section">
     <li><strong>Python CLI</strong> for management</li>
   </ul>
 </section>
+
 
 
