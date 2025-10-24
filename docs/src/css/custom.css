@@ -222,7 +222,56 @@ h3 {
   color: var(--ifm-font-color-base);
 }
 
+.architecture-section {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  text-align: left;
+  line-height: 1.8;
+  animation: fadeIn 0.8s ease-in-out;
+}
 
+.architecture-section h2 {
+  color: var(--ifm-color-primary);
+  border-bottom: 3px solid var(--ifm-color-primary);
+  display: inline-block;
+  padding-bottom: 0.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 1.8rem;
+}
+
+.architecture-section h3 {
+  color: var(--ifm-color-primary);
+  margin-top: 1.5rem;
+  font-size: 1.25rem;
+}
+
+.architecture-diagram {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.architecture-diagram img {
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.diagram-caption {
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-600);
+  margin-top: 0.5rem;
+}
+
+.architecture-list {
+  margin-left: 1.5rem;
+  padding-left: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.architecture-list li {
+  margin-bottom: 0.5rem;
+}
 
 
 
