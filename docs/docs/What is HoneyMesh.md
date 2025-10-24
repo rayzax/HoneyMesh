@@ -27,7 +27,7 @@
     <strong>open-source honeypot technologies</strong>.
   </p>
 </section>
-section class="architecture-section">
+<section class="architecture-section">
   <h2><strong>Architecture / Design Overview</strong></h2>
 
   <h3>Data Flow:</h3>
@@ -48,6 +48,7 @@ section class="architecture-section">
     <li><strong>Python CLI</strong> for management</li>
   </ul>
 </section>
+
 
 
 
