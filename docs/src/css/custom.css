@@ -273,6 +273,60 @@ h3 {
   margin-bottom: 0.5rem;
 }
 
+.welcome-section {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  text-align: left;
+  line-height: 1.8;
+  animation: fadeIn 0.8s ease-in-out;
+}
 
+.welcome-section h1 {
+  color: var(--ifm-color-primary);
+  border-bottom: 3px solid var(--ifm-color-primary);
+  display: inline-block;
+  padding-bottom: 0.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 2rem;
+}
+
+.welcome-list {
+  list-style: disc;
+  margin-left: 1.5rem;
+  padding-left: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.welcome-list li {
+  margin-bottom: 0.5rem;
+}
+
+.welcome-section p {
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+  color: var(--ifm-font-color-base);
+}
+
+.welcome-button {
+  display: inline-block;
+  background-color: var(--ifm-color-primary);
+  color: var(--ifm-color-white);
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.welcome-button:hover {
+  background-color: var(--ifm-color-primary-dark);
+}
+
+.feature-tags {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: var(--ifm-color-emphasis-600);
+}
 
 
