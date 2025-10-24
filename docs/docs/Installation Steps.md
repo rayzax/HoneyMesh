@@ -83,22 +83,39 @@ python3 honeymesh.py
     <li>Export data for further analysis</li>
   </ul>
 </section>
-<section class="usage-section">
+<section className="usage-section">
   <h2><strong>Usage</strong></h2>
 
   <h3>Starting HoneyMesh:</h3>
-  <pre><code class="language-bash">python3 honeymesh.py</code></pre>
+  <pre>
+    <code className="language-bash">
+python3 honeymesh.py
+    </code>
+  </pre>
 
   <h3>Main Menu:</h3>
-  <p><em>Insert image of the main menu here</em></p>
-  <img src="img/main-menu.png" alt="HoneyMesh Main Menu" class="usage-image">
+  <p>View the HoneyMesh main menu below:</p>
+  <div style={{ textAlign: 'center', margin: '1rem 0' }}>
+    <img 
+      src="https://github.com/user-attachments/assets/cabe351a-6a05-46e7-9abd-29eaae6dc380" 
+      alt="HoneyMesh Main Menu" 
+      style={{ maxWidth: '100%', height: 'auto', borderRadius: '6px' }} 
+    />
+  </div>
 
   <h3>Management Console:</h3>
-  <p><em>Insert image of the management console here</em></p>
-  <img src="img/management-console.png" alt="HoneyMesh Management Console" class="usage-image">
+  <p>View the HoneyMesh management console below:</p>
+  <div style={{ textAlign: 'center', margin: '1rem 0' }}>
+    <img 
+      src="https://github.com/user-attachments/assets/322c9ea4-9b8f-405e-938a-5fd0e52c4553" 
+      alt="HoneyMesh Management Console" 
+      style={{ maxWidth: '100%', height: 'auto', borderRadius: '6px' }} 
+    />
+  </div>
 
   <h3>Accessing Services:</h3>
-  <pre><code class="language-bash">
+  <pre>
+    <code className="language-bash">
 # SSH honeypot
 ssh user@localhost -p 2222
 
@@ -107,6 +124,7 @@ http://localhost:5601
 
 # View logs
 tail -f ./honeypot-data/logs/cowrie.json
-  </code></pre>
+    </code>
+  </pre>
 </section>
 
