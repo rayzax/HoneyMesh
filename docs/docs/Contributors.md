@@ -10,3 +10,9 @@
     <li>Made for security research and education</li>
   </ul>
 </section>
+<section className="credits-section">
+  <h2><strong>Credits</strong></h2>
+  <p>
+    This project was worked on and created by <strong>Andrew Syverson</strong>, <strong>Rylan Ibach</strong>, <strong>Levi Knoll</strong>, and <strong>Cody Turner</strong>.
+  </p>
+</section>
