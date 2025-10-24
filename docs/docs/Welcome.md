@@ -23,7 +23,7 @@
   </ul>
 
   <p>
-    Start exploring HoneyMesh by following the installation instructions in this repository.  
+    Start exploring HoneyMesh by following the installation instructions below.  
     Use it safely on networks you own or have explicit permission to test.
   </p>
 
@@ -35,9 +35,3 @@
     ELK stack for logging and analysis &nbsp;|&nbsp; Python CLI for management
   </p>
 </section>
-
-
-
-
-
-
