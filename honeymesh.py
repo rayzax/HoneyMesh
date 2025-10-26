@@ -20,6 +20,12 @@ import docker
 from docker.errors import DockerException, APIError, ImageNotFound
 import threading
 
+try:
+    from medium.medium_deployment import MediumDeploymentManager
+    MEDIUM_AVAILABLE = True
+except ImportError:
+    MEDIUM_AVAILABLE = False
+
 # Embedded dependency checker
 class DependencyChecker:
     def __init__(self):
@@ -27,7 +33,7 @@ class DependencyChecker:
         self.warnings = []
         self.success_count = 0
         self.total_checks = 0
-        
+
     def print_status(self, message: str, status: str = "info"):
         """Print status messages with colored indicators"""
         if status == "success":
@@ -41,14 +47,14 @@ class DependencyChecker:
             self.errors.append(message)
         else:
             print(f"{Colors.BLUE}[i]{Colors.END} {message}")
-            
+
     def check_critical_dependencies(self) -> bool:
         """Quick check of critical dependencies only"""
         self.total_checks = 0
         self.errors = []
         self.warnings = []
         self.success_count = 0
-        
+
         # Check Python packages
         critical_packages = ['docker', 'yaml', 'requests']
         for package in critical_packages:
@@ -58,21 +64,21 @@ class DependencyChecker:
                 self.success_count += 1
             except ImportError:
                 self.errors.append(f"Python package '{package}' not installed")
-                
+
         # Check Docker command
         self.total_checks += 1
         if shutil.which('docker'):
             self.success_count += 1
         else:
             self.errors.append("Docker command not found")
-            
+
         # Check docker-compose command
         self.total_checks += 1
         if shutil.which('docker-compose'):
             self.success_count += 1
         else:
             self.errors.append("docker-compose command not found")
-            
+
         # Check Docker permissions
         self.total_checks += 1
         try:
@@ -82,9 +88,9 @@ class DependencyChecker:
             self.success_count += 1
         except Exception:
             self.errors.append("Cannot access Docker daemon (check permissions)")
-            
+
         return len(self.errors) == 0
-        
+
     def print_quick_fix(self):
         """Print quick installation command"""
         print(f"\n{Colors.YELLOW}Quick fix command:{Colors.END}")
@@ -111,12 +117,12 @@ class HoneyMeshApp:
         self.docker_client = None
         self.config = {}
         self.containers = {}
-        
+
         # Setup logging
         self.log_dir = Path("./honeymesh-logs")
         self.log_dir.mkdir(exist_ok=True)
         self.setup_logging()
-        
+
         # Service definitions
         self.services = {
             'elasticsearch': 'honeymesh-elasticsearch',
@@ -125,38 +131,40 @@ class HoneyMeshApp:
             'cowrie': 'honeymesh-cowrie',
             'kibana': 'honeymesh-kibana'
         }
-        
+
+        self.medium_manager = None
+
     def setup_logging(self):
         """Setup comprehensive logging to file"""
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         log_file = self.log_dir / f"honeymesh_{timestamp}.log"
-        
+
         # Setup logger
         self.logger = logging.getLogger('HoneyMesh')
         self.logger.setLevel(logging.DEBUG)
-        
+
         # Remove any existing handlers
         self.logger.handlers.clear()
-        
+
         # File handler
         file_handler = logging.FileHandler(log_file)
         file_handler.setLevel(logging.DEBUG)
-        
+
         # Create formatter
         formatter = logging.Formatter(
             '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         )
         file_handler.setFormatter(formatter)
-        
+
         # Add handler to logger
         self.logger.addHandler(file_handler)
-        
+
         self.logger.info("HoneyMesh logging initialized")
         self.logger.info(f"Log file: {log_file}")
-        
+
         # Store log file path for user reference
         self.current_log_file = log_file
-        
+
     def print_banner(self):
         """Display the application banner with ASCII art"""
         banner = f"""{Colors.CYAN}
@@ -177,7 +185,7 @@ The authors are not responsible for misuse or any damages caused by this softwar
 {Colors.GREEN}Legal Notice:{Colors.END} Ensure compliance with local laws and regulations before deployment.
 """
         print(banner)
-        
+
     def print_status(self, message: str, status: str = "info"):
         """Print status messages with colored indicators and log to file"""
         # Log to file
@@ -190,7 +198,7 @@ The authors are not responsible for misuse or any damages caused by this softwar
                 self.logger.error(f"ERROR: {message}")
             else:
                 self.logger.info(f"INFO: {message}")
-        
+
         # Print to console
         if status == "success":
             print(f"{Colors.GREEN}[+]{Colors.END} {message}")
@@ -200,7 +208,7 @@ The authors are not responsible for misuse or any damages caused by this softwar
             print(f"{Colors.RED}[x]{Colors.END} {message}")
         else:
             print(f"{Colors.BLUE}[i]{Colors.END} {message}")
-            
+
     def log_exception(self, operation: str, exception: Exception):
         """Log detailed exception information"""
         if hasattr(self, 'logger'):
@@ -209,33 +217,33 @@ The authors are not responsible for misuse or any damages caused by this softwar
             self.logger.error(f"Exception message: {str(exception)}")
             import traceback
             self.logger.error(f"Traceback: {traceback.format_exc()}")
-            
+
     def log_docker_info(self):
         """Log Docker environment information"""
         try:
             if not self.docker_client:
                 self.docker_client = docker.from_env()
-            
+
             # Log Docker version
             version_info = self.docker_client.version()
             self.logger.info(f"Docker version: {version_info.get('Version', 'unknown')}")
-            
+
             # Log system info
             system_info = self.docker_client.info()
             self.logger.info(f"Docker containers running: {system_info.get('ContainersRunning', 0)}")
             self.logger.info(f"Docker images: {system_info.get('Images', 0)}")
-            
+
         except Exception as e:
             self.log_exception("log_docker_info", e)
-            
+
     def clear_screen(self):
         """Clear the terminal screen"""
         os.system('cls' if os.name == 'nt' else 'clear')
-        
+
     def wait_for_input(self, prompt: str = "Press Enter to continue..."):
         """Wait for user input"""
         input(f"{Colors.CYAN}{prompt}{Colors.END}")
-        
+
     def get_user_choice(self, prompt: str, valid_choices: List[str]) -> str:
         """Get user choice with validation"""
         while True:
@@ -243,17 +251,17 @@ The authors are not responsible for misuse or any damages caused by this softwar
             if choice in [c.lower() for c in valid_choices]:
                 return choice
             print(f"{Colors.RED}Invalid choice. Please select from: {', '.join(valid_choices)}{Colors.END}")
-            
+
     def detect_existing_deployment(self) -> bool:
         """Check if there's an existing HoneyMesh deployment"""
         # Check for data directory
         if not self.data_dir.exists():
             return False
-            
+
         # Check for config file
         if not self.config_file.exists():
             return False
-            
+
         # Check for running containers
         try:
             if not self.docker_client:
@@ -263,14 +271,14 @@ The authors are not responsible for misuse or any damages caused by this softwar
             return len(honeymesh_containers) > 0
         except DockerException:
             return False
-            
+
     def get_container_status(self) -> Dict[str, Dict]:
         """Get status of all HoneyMesh containers"""
         status = {}
         try:
             if not self.docker_client:
                 self.docker_client = docker.from_env()
-                
+
             for service, container_name in self.services.items():
                 try:
                     container = self.docker_client.containers.get(container_name)
@@ -289,15 +297,15 @@ The authors are not responsible for misuse or any damages caused by this softwar
                     }
         except DockerException as e:
             self.print_status(f"Error accessing Docker: {str(e)}", "error")
-            
+
         return status
-        
+
     def check_container_health(self, container) -> str:
         """Check if a container is healthy"""
         try:
             if container.status != 'running':
                 return 'unhealthy'
-                
+
             # For containers without health checks, we'll do basic connectivity tests
             if 'elasticsearch' in container.name:
                 return self.check_elasticsearch_health()
@@ -313,7 +321,7 @@ The authors are not responsible for misuse or any damages caused by this softwar
                 return 'healthy' if container.status == 'running' else 'unhealthy'
         except:
             return 'unknown'
-            
+
     def get_container_ports(self, container) -> Dict:
         """Get port mappings for a container"""
         try:
@@ -325,7 +333,7 @@ The authors are not responsible for misuse or any damages caused by this softwar
             return ports
         except:
             return {}
-            
+
     def check_elasticsearch_health(self) -> str:
         """Check Elasticsearch health via HTTP"""
         try:
@@ -334,7 +342,7 @@ The authors are not responsible for misuse or any damages caused by this softwar
             return 'healthy' if response.status_code == 200 else 'unhealthy'
         except:
             return 'unhealthy'
-            
+
     def check_kibana_health(self) -> str:
         """Check Kibana health"""
         try:
@@ -344,7 +352,7 @@ The authors are not responsible for misuse or any damages caused by this softwar
             return 'healthy' if response.status_code == 200 else 'unhealthy'
         except:
             return 'unhealthy'
-            
+
     def check_cowrie_health(self) -> str:
         """Check Cowrie health by testing SSH port"""
         try:
@@ -355,7 +363,7 @@ The authors are not responsible for misuse or any damages caused by this softwar
                 return 'healthy' if result == 0 else 'unhealthy'
         except:
             return 'unhealthy'
-            
+
     def check_logstash_health(self) -> str:
         """Check Logstash health"""
         try:
@@ -364,53 +372,58 @@ The authors are not responsible for misuse or any damages caused by this softwar
             return 'healthy' if response.status_code == 200 else 'unhealthy'
         except:
             return 'unhealthy'
-            
+
     def check_filebeat_health(self) -> str:
         """Check Filebeat health - filebeat doesn't have a status endpoint"""
         # For filebeat, we just check if container is running since it doesn't have an HTTP endpoint
         return 'healthy'
-        
+
     def show_main_menu(self):
         """Display the main menu based on deployment detection"""
-        self.clear_screen()
-        self.print_banner()
-        
-        existing_deployment = self.detect_existing_deployment()
-        
-        if existing_deployment:
-            print(f"{Colors.BOLD}Existing HoneyMesh deployment detected in {self.data_dir}{Colors.END}\n")
-            print("Select an option:")
-            print(f"{Colors.GREEN}[M]{Colors.END} Manage existing deployment")
-            print(f"{Colors.BLUE}[N]{Colors.END} Create new deployment")
-            print(f"{Colors.RED}[R]{Colors.END} Remove existing & start fresh")
-            print(f"{Colors.WHITE}[Q]{Colors.END} Quit")
-            
-            choice = self.get_user_choice("\nEnter your choice: ", ['M', 'N', 'R', 'Q'])
-            
-            if choice == 'm':
-                self.management_console()
-            elif choice == 'n':
-                self.create_new_deployment()
-            elif choice == 'r':
-                self.remove_existing_deployment()
-            elif choice == 'q':
-                self.quit_application()
-        else:
-            print("Select Honeypot Configuration:\n")
-            print(f"{Colors.GREEN}[1]{Colors.END} Default (SSH + Telnet)")
-            print(f"{Colors.YELLOW}[2]{Colors.END} Medium Interaction (Coming Soon)")
-            print(f"{Colors.YELLOW}[3]{Colors.END} High Interaction (Coming Soon)")
-            print(f"{Colors.WHITE}[Q]{Colors.END} Quit")
-            
-            choice = self.get_user_choice("\nEnter your choice: ", ['1', '2', '3', 'Q'])
-            
-            if choice == '1':
-                self.deploy_default_environment()
-            elif choice in ['2', '3']:
-                self.show_coming_soon()
-            elif choice == 'q':
-                self.quit_application()
-                
+        while True:  # ← ADD THIS LINE
+            self.clear_screen()
+            self.print_banner()
+
+            existing_deployment = self.detect_existing_deployment()
+
+            if existing_deployment:
+                print(f"{Colors.BOLD}Existing HoneyMesh deployment detected in {self.data_dir}{Colors.END}\n")
+                print("Select an option:")
+                print(f"{Colors.GREEN}[M]{Colors.END} Manage existing deployment")
+                print(f"{Colors.BLUE}[N]{Colors.END} Create new deployment")
+                print(f"{Colors.RED}[R]{Colors.END} Remove existing & start fresh")
+                print(f"{Colors.WHITE}[Q]{Colors.END} Quit")
+
+                choice = self.get_user_choice("\nEnter your choice: ", ['M', 'N', 'R', 'Q'])
+
+                if choice == 'm':
+                    self.management_console()
+                elif choice == 'n':
+                    self.create_new_deployment()
+                elif choice == 'r':
+                    self.remove_existing_deployment()
+                elif choice == 'q':
+                    self.quit_application()
+            else:
+                print("Select Honeypot Configuration:\n")
+                print(f"{Colors.GREEN}[1]{Colors.END} Default (SSH + Telnet)")
+                print(f"{Colors.GREEN}[2]{Colors.END} Medium Interaction")
+                print(f"{Colors.YELLOW}[3]{Colors.END} High Interaction (Coming Soon)")
+                print(f"{Colors.WHITE}[Q]{Colors.END} Quit")
+
+                choice = self.get_user_choice("\nEnter your choice: ", ['1', '2', '3', 'Q'])
+
+                if choice == '1':
+                    self.deploy_default_environment()
+                    # After deployment, continues the while loop
+                elif choice == '2':
+                    self.deploy_medium_interaction()
+                    # After medium returns, continues the while loop ← THIS FIXES IT
+                elif choice == '3':
+                    self.show_coming_soon()
+                elif choice == 'q':
+                    self.quit_application()
+
     def show_coming_soon(self):
         """Display coming soon message"""
         self.clear_screen()
@@ -419,14 +432,14 @@ The authors are not responsible for misuse or any damages caused by this softwar
         print("Stay tuned for updates!")
         self.wait_for_input("\nPress Enter to return to main menu...")
         self.show_main_menu()
-        
+
     def check_system_requirements(self) -> bool:
         """Check if system meets requirements for deployment"""
         self.print_status("Checking system requirements...", "info")
         time.sleep(1)
-        
+
         requirements_passed = True
-        
+
         # Check Docker installation
         try:
             self.docker_client = docker.from_env()
@@ -436,7 +449,7 @@ The authors are not responsible for misuse or any damages caused by this softwar
             self.print_status("Docker not found or not running", "error")
             print(f"  {Colors.RED}Error: {str(e)}{Colors.END}")
             requirements_passed = False
-            
+
         # Check available disk space
         try:
             disk_usage = shutil.disk_usage('.')
@@ -448,7 +461,7 @@ The authors are not responsible for misuse or any damages caused by this softwar
                 requirements_passed = False
         except Exception as e:
             self.print_status("Could not check disk space", "warning")
-            
+
         # Check port availability
         ports_to_check = [2222, 2223, 5601, 9200]
         for port in ports_to_check:
@@ -457,9 +470,9 @@ The authors are not responsible for misuse or any damages caused by this softwar
             else:
                 self.print_status(f"Port {port} is in use", "error")
                 requirements_passed = False
-                
+
         return requirements_passed
-        
+
     def is_port_available(self, port: int) -> bool:
         """Check if a port is available"""
         try:
@@ -468,36 +481,36 @@ The authors are not responsible for misuse or any damages caused by this softwar
                 return True
         except socket.error:
             return False
-            
+
     def get_deployment_config(self) -> Dict:
         """Get deployment configuration from user"""
         config = {}
-        
+
         print(f"\n{Colors.BOLD}SSH Honeypot Setup:{Colors.END}")
         config['ssh_port'] = self.get_port_input("Port number", 2222)
         config['ssh_enabled'] = self.get_yes_no_input("Enable SSH service", True)
-        
+
         print(f"\n{Colors.BOLD}Telnet Honeypot Setup:{Colors.END}")
         config['telnet_enabled'] = self.get_yes_no_input("Enable Telnet", False)
         if config['telnet_enabled']:
             config['telnet_port'] = self.get_port_input("Telnet port number", 2223)
         else:
             config['telnet_port'] = None
-            
+
         print(f"\n{Colors.BOLD}System Identity:{Colors.END}")
         config['hostname'] = input(f"Hostname [ubuntu-server]: ").strip() or "ubuntu-server"
         config['ssh_banner'] = input(f"SSH banner [SSH-2.0-OpenSSH_7.4]: ").strip() or "SSH-2.0-OpenSSH_7.4"
-        
+
         print(f"\n{Colors.BOLD}Dashboard Access:{Colors.END}")
         config['kibana_port'] = self.get_port_input("Kibana port", 5601)
         config['external_access'] = self.get_yes_no_input("Allow external access (WARNING: Security risk)", False)
-        
+
         print(f"\n{Colors.BOLD}Storage Settings:{Colors.END}")
         config['data_directory'] = input(f"Data directory [./honeypot-data]: ").strip() or "./honeypot-data"
         config['log_retention_days'] = self.get_number_input("Log retention days", 30)
-        
+
         return config
-        
+
     def get_port_input(self, prompt: str, default: int) -> int:
         """Get port number from user with validation"""
         while True:
@@ -512,7 +525,7 @@ The authors are not responsible for misuse or any damages caused by this softwar
                     print(f"{Colors.RED}Port must be between 1024 and 65535{Colors.END}")
             except ValueError:
                 print(f"{Colors.RED}Please enter a valid port number{Colors.END}")
-                
+
     def get_yes_no_input(self, prompt: str, default: bool) -> bool:
         """Get yes/no input from user"""
         default_str = "Y/n" if default else "y/N"
@@ -526,7 +539,7 @@ The authors are not responsible for misuse or any damages caused by this softwar
                 return False
             else:
                 print(f"{Colors.RED}Please enter 'y' or 'n'{Colors.END}")
-                
+
     def get_number_input(self, prompt: str, default: int) -> int:
         """Get number input from user with validation"""
         while True:
@@ -537,7 +550,7 @@ The authors are not responsible for misuse or any damages caused by this softwar
                 return int(number_str)
             except ValueError:
                 print(f"{Colors.RED}Please enter a valid number{Colors.END}")
-                
+
     def show_deployment_summary(self, config: Dict) -> bool:
         """Show deployment summary and get confirmation"""
         self.clear_screen()
@@ -553,14 +566,14 @@ The authors are not responsible for misuse or any damages caused by this softwar
         print(f"Storage           → {config['data_directory']}")
         print(f"Est. Disk Usage   → ~500MB initial")
         print("─" * 40)
-        
+
         print(f"\n{Colors.GREEN}[D]{Colors.END} Deploy")
         print(f"{Colors.YELLOW}[M]{Colors.END} Modify")
         print(f"{Colors.BLUE}[S]{Colors.END} Save Config")
         print(f"{Colors.WHITE}[Q]{Colors.END} Quit")
-        
+
         choice = self.get_user_choice("\nEnter your choice: ", ['D', 'M', 'S', 'Q'])
-        
+
         if choice == 'd':
             return True
         elif choice == 'm':
@@ -570,7 +583,21 @@ The authors are not responsible for misuse or any damages caused by this softwar
             return self.show_deployment_summary(config)
         elif choice == 'q':
             self.quit_application()
-            
+
+    def deploy_medium_interaction(self):
+        """Deploy medium interaction honeypot"""
+        try:
+            if not self.medium_manager:
+                self.medium_manager = MediumDeploymentManager(self)
+
+            self.medium_manager.show_medium_deployment_menu()
+
+        except Exception as e:
+            self.print_status(f"Medium interaction error: {str(e)}", "error")
+            self.log_exception("deploy_medium_interaction", e)
+            self.wait_for_input()
+            self.show_main_menu()
+
     def save_config(self, config: Dict):
         """Save configuration to file"""
         try:
@@ -581,12 +608,12 @@ The authors are not responsible for misuse or any damages caused by this softwar
         except Exception as e:
             self.print_status(f"Failed to save configuration: {str(e)}", "error")
         self.wait_for_input()
-        
+
     def deploy_default_environment(self):
         """Main deployment workflow for default environment"""
         self.clear_screen()
         self.print_status("Starting default honeypot deployment", "info")
-        
+
         # Check system requirements
         if not self.check_system_requirements():
             print(f"\n{Colors.RED}System requirements not met.{Colors.END}")
@@ -596,61 +623,61 @@ The authors are not responsible for misuse or any damages caused by this softwar
             else:
                 self.show_main_menu()
             return
-            
+
         # Get configuration
         while True:
             self.config = self.get_deployment_config()
             if self.show_deployment_summary(self.config):
                 break
             # If user chose modify, loop back to get config again
-            
+
         # Perform deployment
         if self.perform_deployment():
             self.show_deployment_success()
         else:
             self.show_deployment_failure()
-            
+
     def perform_deployment(self) -> bool:
         """Execute the actual deployment"""
         self.clear_screen()
         print(f"{Colors.BOLD}Deploying HoneyMesh Environment{Colors.END}\n")
-        
+
         try:
             self.logger.info("=== Starting HoneyMesh deployment ===")
             self.logger.info(f"Configuration: {json.dumps(self.config, indent=2)}")
-            
+
             # Log Docker environment
             self.log_docker_info()
-            
+
             # Create directories
             self.print_status("Creating data directories...", "info")
             self.create_deployment_directories()
             time.sleep(1)
             self.print_status("Data directories created", "success")
-            
+
             # Generate configuration files
             self.print_status("Generating configuration files...", "info")
             self.generate_config_files()
             time.sleep(1)
             self.print_status("Configuration files generated", "success")
-            
+
             # Save configuration
             self.save_config(self.config)
-            
+
             # Pull Docker images
             self.print_status("Pulling Docker images (this may take a few minutes)...", "info")
             self.pull_docker_images()
             self.print_status("Docker images ready", "success")
-            
+
             # Start services using docker-compose
             self.start_services_with_docker_compose()
             self.print_status("All services started successfully", "success")
-            
+
             # Final verification
             self.print_status("Performing final verification...", "info")
             time.sleep(2)
             status = self.get_container_status()
-            
+
             all_healthy = all(s.get('health') == 'healthy' for s in status.values())
             if all_healthy:
                 self.print_status("All services verified and healthy", "success")
@@ -660,12 +687,12 @@ The authors are not responsible for misuse or any damages caused by this softwar
                 self.print_status("Some services may not be fully ready yet", "warning")
                 self.logger.warning("Some services not fully healthy, but deployment considered successful")
                 return True  # Still consider successful, services might need more time
-            
+
         except Exception as e:
             self.log_exception("perform_deployment", e)
             self.print_status(f"Deployment failed: {str(e)}", "error")
             self.print_status(f"Check logs at: {self.current_log_file}", "info")
-            
+
             # Log current container states
             try:
                 self.logger.info("=== Container states at failure ===")
@@ -677,22 +704,22 @@ The authors are not responsible for misuse or any damages caused by this softwar
                         self.logger.info(f"Recent logs for {container.name}:\n{logs}")
             except Exception as log_error:
                 self.logger.error(f"Could not log container states: {log_error}")
-            
+
             # Attempt cleanup on failure
             try:
                 self.stop_services()
             except:
                 pass
-                
+
             return False
-            
+
     def create_deployment_directories(self):
         """Create necessary directories for deployment"""
         directories = [
             self.data_dir,
             self.data_dir / "logs",
             self.data_dir / "elasticsearch",
-            self.data_dir / "kibana", 
+            self.data_dir / "kibana",
             self.data_dir / "logstash",
             self.data_dir / "cowrie" / "config",
             self.data_dir / "cowrie" / "var" / "log" / "cowrie",
@@ -701,16 +728,16 @@ The authors are not responsible for misuse or any damages caused by this softwar
             self.data_dir / "elk-config" / "logstash",
             self.data_dir / "elk-config" / "filebeat"
         ]
-        
+
         for directory in directories:
             directory.mkdir(parents=True, exist_ok=True)
-            
+
         # Set proper permissions for Cowrie directories
         self.set_cowrie_permissions()
-            
+
         # Create user database files for Cowrie
         self.create_cowrie_user_files()
-        
+
     def create_cowrie_user_files(self):
         """Create user database files for Cowrie authentication"""
         try:
@@ -721,48 +748,48 @@ user:x:123456
 test:x:test
 guest:x:guest
 """
-            
+
             userdb_file = self.data_dir / "cowrie" / "config" / "userdb.txt"
             with open(userdb_file, 'w') as f:
                 f.write(userdb_content)
-            
+
             # Set proper permissions
             userdb_file.chmod(0o644)
-            
+
             self.logger.info("Cowrie user database created successfully")
             self.print_status("Cowrie user database created", "success")
-            
+
         except Exception as e:
             self.logger.error(f"Failed to create Cowrie user files: {e}")
             self.print_status(f"Failed to create user files: {str(e)}", "error")
             raise
-        
+
     def set_cowrie_permissions(self):
         """Set proper permissions for Cowrie directories"""
         try:
             import subprocess
-            
+
             # The Cowrie container typically runs as UID 1000 or needs write access
             # Set ownership and permissions for Cowrie directories
             cowrie_dirs = [
                 self.data_dir / "cowrie",
                 self.data_dir / "logs"
             ]
-            
+
             for cowrie_dir in cowrie_dirs:
                 if cowrie_dir.exists():
                     # Make directories writable by the cowrie user (typically UID 1000)
                     # Use chmod to make directories writable
-                    subprocess.run(['chmod', '-R', '777', str(cowrie_dir)], 
+                    subprocess.run(['chmod', '-R', '777', str(cowrie_dir)],
                                  capture_output=True, text=True, check=False)
                     self.logger.info(f"Set permissions for {cowrie_dir}")
-            
+
             self.print_status("Set proper permissions for Cowrie directories", "success")
-            
+
         except Exception as e:
             self.logger.error(f"Failed to set Cowrie permissions: {e}")
             self.print_status(f"Warning: Could not set permissions: {str(e)}", "warning")
-        
+
     def create_cowrie_filesystem_files(self):
         """Create essential filesystem files that Cowrie needs"""
         try:
@@ -810,11 +837,11 @@ gdm:x:121:125:Gnome Display Manager:/var/lib/gdm3:/bin/false
 user:x:1000:1000:user,,,:/home/user:/bin/bash
 admin:x:1001:1001:admin,,,:/home/admin:/bin/bash
 """
-            
+
             passwd_file = self.data_dir / "cowrie" / "honeyfs" / "etc" / "passwd"
             with open(passwd_file, 'w') as f:
                 f.write(passwd_content)
-            
+
             # Create group file
             group_content = """root:x:0:
 daemon:x:1:
@@ -875,11 +902,11 @@ lpadmin:x:117:user
 user:x:1000:
 admin:x:1001:
 """
-            
+
             group_file = self.data_dir / "cowrie" / "honeyfs" / "etc" / "group"
             with open(group_file, 'w') as f:
                 f.write(group_content)
-            
+
             # Create shadow file
             shadow_content = """root:*:17000:0:99999:7:::
 daemon:*:17000:0:99999:7:::
@@ -908,106 +935,106 @@ uuidd:*:17000:0:99999:7:::
 user:$6$rounds=656000$YQKJLk.j1ajqhDx/$Dq9YloqmBXNbvGJYKjfCGK7x6l.zpRNKs6hb7XWE56.CSSyGCqFYZzLLxTNEXiYa4NwOEA9zX6.VgdQXpgTQy.:17000:0:99999:7:::
 admin:$6$rounds=656000$YQKJLk.j1ajqhDx/$Dq9YloqmBXNbvGJYKjfCGK7x6l.zpRNKs6hb7XWE56.CSSyGCqFYZzLLxTNEXiYa4NwOEA9zX6.VgdQXpgTQy.:17000:0:99999:7:::
 """
-            
+
             shadow_file = self.data_dir / "cowrie" / "honeyfs" / "etc" / "shadow"
             with open(shadow_file, 'w') as f:
                 f.write(shadow_content)
-            
+
             # Create basic shell scripts and binaries simulation
             self.create_basic_commands()
-            
+
             self.logger.info("Cowrie filesystem files created successfully")
             self.print_status("Cowrie filesystem files created", "success")
-            
+
         except Exception as e:
             self.logger.error(f"Failed to create Cowrie filesystem files: {e}")
             self.print_status(f"Failed to create filesystem files: {str(e)}", "error")
             raise
-            
+
     def create_basic_commands(self):
         """Create basic command files for the honeypot"""
         try:
             # Create bin directory files (fake commands)
             bin_commands = ['ls', 'cat', 'pwd', 'whoami', 'id', 'uname', 'ps', 'netstat', 'ifconfig', 'wget', 'curl']
-            
+
             bin_dir = self.data_dir / "cowrie" / "honeyfs" / "bin"
             usr_bin_dir = self.data_dir / "cowrie" / "honeyfs" / "usr" / "bin"
-            
+
             for cmd in bin_commands:
                 # Create fake command files (empty files are sufficient for Cowrie)
                 bin_file = bin_dir / cmd
                 usr_bin_file = usr_bin_dir / cmd
-                
+
                 bin_file.touch()
                 usr_bin_file.touch()
-                
+
                 # Make them executable
                 bin_file.chmod(0o755)
                 usr_bin_file.chmod(0o755)
-            
+
             # Create some basic directories that programs expect
             home_dirs = ['user', 'admin']
             for home_dir in home_dirs:
                 home_path = self.data_dir / "cowrie" / "honeyfs" / "home" / home_dir
                 home_path.mkdir(parents=True, exist_ok=True)
-                
+
             # Create root home directory
             root_home = self.data_dir / "cowrie" / "honeyfs" / "root"
             root_home.mkdir(parents=True, exist_ok=True)
-            
+
             # Set permissions on all created files
             self.set_file_permissions()
-                
+
             self.logger.info("Basic command files created successfully")
-            
+
         except Exception as e:
             self.logger.error(f"Failed to create basic commands: {e}")
             raise
-            
+
     def set_file_permissions(self):
         """Set proper permissions on all created files"""
         try:
             import subprocess
-            
+
             # Set permissions on the honeyfs directory and contents
             honeyfs_path = self.data_dir / "cowrie" / "honeyfs"
             if honeyfs_path.exists():
-                subprocess.run(['chmod', '-R', '755', str(honeyfs_path)], 
+                subprocess.run(['chmod', '-R', '755', str(honeyfs_path)],
                              capture_output=True, text=True, check=False)
-                
+
             # Make specific files readable
             files_to_fix = [
                 self.data_dir / "cowrie" / "honeyfs" / "etc" / "passwd",
-                self.data_dir / "cowrie" / "honeyfs" / "etc" / "group", 
+                self.data_dir / "cowrie" / "honeyfs" / "etc" / "group",
                 self.data_dir / "cowrie" / "honeyfs" / "etc" / "shadow"
             ]
-            
+
             for file_path in files_to_fix:
                 if file_path.exists():
-                    subprocess.run(['chmod', '644', str(file_path)], 
+                    subprocess.run(['chmod', '644', str(file_path)],
                                  capture_output=True, text=True, check=False)
-                    
+
             self.logger.info("File permissions set successfully")
-            
+
         except Exception as e:
             self.logger.error(f"Failed to set file permissions: {e}")
-            
+
     def generate_config_files(self):
         """Generate configuration files for all services"""
         # Generate docker-compose.yml
         docker_compose_content = self.get_docker_compose_template()
         with open(self.docker_compose_file, 'w') as f:
             f.write(docker_compose_content)
-            
+
         # Generate Logstash configuration
         self.generate_logstash_config()
-        
-        # Generate Filebeat configuration  
+
+        # Generate Filebeat configuration
         self.generate_filebeat_config()
-        
+
         # Generate Cowrie configuration
         self.generate_cowrie_config()
-        
+
     def generate_logstash_config(self):
         """Generate Logstash pipeline configuration"""
         logstash_config = """
@@ -1025,7 +1052,7 @@ filter {
         match => [ "timestamp", "ISO8601" ]
       }
     }
-    
+
     # Add GeoIP data if source IP present
     if [src_ip] {
       geoip {
@@ -1033,7 +1060,7 @@ filter {
         target => "geoip"
       }
     }
-    
+
     # Clean up fields
     mutate {
       remove_field => [ "@version", "host", "agent", "ecs", "log", "input" ]
@@ -1046,29 +1073,29 @@ output {
     hosts => ["elasticsearch:9200"]
     index => "cowrie-%{+YYYY.MM.dd}"
   }
-  
+
   stdout {
     codec => rubydebug
   }
 }
 """
-        
+
         pipeline_path = self.data_dir / "elk-config" / "logstash" / "logstash.conf"
         self.logger.info(f"Writing Logstash config to: {pipeline_path}")
-        
+
         try:
             # Ensure directory exists
             pipeline_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             with open(pipeline_path, 'w') as f:
                 f.write(logstash_config.strip())
-                
+
             self.logger.info(f"Logstash config written successfully")
-            
+
         except Exception as e:
             self.logger.error(f"Failed to write Logstash config: {e}")
             raise
-            
+
     def generate_cowrie_config(self):
         """Generate Cowrie configuration"""
         cowrie_config = f"""[honeypot]
@@ -1103,26 +1130,26 @@ pool_only = false
 [proxy]
 enabled = false
 """
-        
+
         # Write the configuration to the cowrie.cfg file
         config_path = self.data_dir / "cowrie" / "config" / "cowrie.cfg"
         self.logger.info(f"Writing Cowrie config to: {config_path}")
-        
+
         try:
             # Ensure directory exists
             config_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             with open(config_path, 'w') as f:
                 f.write(cowrie_config.strip())
-                
+
             self.logger.info(f"Cowrie config written successfully")
             self.print_status(f"Cowrie configuration created at {config_path}", "success")
-            
+
         except Exception as e:
             self.logger.error(f"Failed to write Cowrie config: {e}")
             self.print_status(f"Failed to write Cowrie config: {str(e)}", "error")
             raise
-        
+
     def generate_filebeat_config(self):
         """Generate Filebeat configuration"""
         filebeat_config = f"""
@@ -1152,19 +1179,19 @@ logging.files:
   keepfiles: 7
   permissions: 0644
 """
-        
+
         config_path = self.data_dir / "elk-config" / "filebeat" / "filebeat.yml"
         with open(config_path, 'w') as f:
             f.write(filebeat_config.strip())
-            
+
     def get_docker_compose_template(self) -> str:
         """Generate docker-compose.yml content based on configuration"""
         telnet_port_mapping = ""
         if self.config.get('telnet_enabled', False):
             telnet_port_mapping = f"      - \"{self.config['telnet_port']}:2223\""
-        
+
         kibana_bind = "127.0.0.1" if not self.config.get('external_access', False) else "0.0.0.0"
-        
+
         template = f"""version: '3.8'
 
 networks:
@@ -1198,7 +1225,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      
+
   kibana:
     image: docker.elastic.co/kibana/kibana:8.11.0
     container_name: honeymesh-kibana
@@ -1220,7 +1247,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      
+
   logstash:
     image: docker.elastic.co/logstash/logstash:8.11.0
     container_name: honeymesh-logstash
@@ -1242,7 +1269,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      
+
   cowrie:
     image: cowrie/cowrie:latest
     container_name: honeymesh-cowrie
@@ -1256,7 +1283,7 @@ services:
     networks:
       - honeymesh
     restart: unless-stopped
-    
+
   filebeat:
     image: docker.elastic.co/beats/filebeat:8.11.0
     container_name: honeymesh-filebeat
@@ -1273,17 +1300,17 @@ services:
     restart: unless-stopped
 """
         return template
-        
+
     def pull_docker_images(self):
         """Pull required Docker images with progress tracking"""
         images = [
             "docker.elastic.co/elasticsearch/elasticsearch:8.11.0",
-            "docker.elastic.co/logstash/logstash:8.11.0", 
+            "docker.elastic.co/logstash/logstash:8.11.0",
             "docker.elastic.co/kibana/kibana:8.11.0",
             "docker.elastic.co/beats/filebeat:8.11.0",
             "cowrie/cowrie:latest"
         ]
-        
+
         for image in images:
             try:
                 self.print_status(f"Pulling {image}...", "info")
@@ -1291,17 +1318,17 @@ services:
                 self.print_status(f"Successfully pulled {image}", "success")
             except DockerException as e:
                 raise Exception(f"Failed to pull image {image}: {str(e)}")
-                
+
     def start_services_with_docker_compose(self) -> bool:
         """Start services using docker-compose"""
         try:
             self.logger.info("Starting docker-compose deployment")
-            
+
             # Change to data directory
             original_dir = os.getcwd()
             self.logger.info(f"Changing directory from {original_dir} to {self.data_dir}")
             os.chdir(self.data_dir)
-            
+
             # Log docker-compose file contents
             try:
                 with open("docker-compose.yml", 'r') as f:
@@ -1310,34 +1337,34 @@ services:
                     self.logger.info(compose_content)
             except Exception as e:
                 self.logger.error(f"Could not read docker-compose.yml: {e}")
-            
+
             # Start services with docker-compose
             self.print_status("Starting services with docker-compose...", "info")
-            
+
             # Start in detached mode
             cmd = ['docker-compose', 'up', '-d']
             self.logger.info(f"Running command: {' '.join(cmd)}")
-            
+
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-            
+
             # Log command results
             self.logger.info(f"Command return code: {result.returncode}")
             self.logger.info(f"STDOUT: {result.stdout}")
             self.logger.info(f"STDERR: {result.stderr}")
-            
+
             if result.returncode != 0:
                 self.print_status(f"Docker-compose failed with return code {result.returncode}", "error")
                 self.print_status(f"STDERR: {result.stderr}", "error")
                 raise Exception(f"docker-compose failed: {result.stderr}")
-                
+
             # Wait for services to be healthy
             self.wait_for_services_healthy()
-            
+
             # Set up Kibana index patterns
             self.setup_kibana_index_patterns()
-            
+
             return True
-            
+
         except subprocess.TimeoutExpired as e:
             self.log_exception("start_services_with_docker_compose - timeout", e)
             raise Exception("Docker compose startup timed out after 5 minutes")
@@ -1350,20 +1377,20 @@ services:
         finally:
             os.chdir(original_dir)
             self.logger.info(f"Changed directory back to {original_dir}")
-            
+
     def wait_for_services_healthy(self, timeout: int = 300):
         """Wait for all services to become healthy"""
         self.logger.info(f"Waiting for services to become healthy (timeout: {timeout}s)")
-        
+
         start_time = time.time()
         services_to_check = list(self.services.keys())
-        
+
         self.print_status("Waiting for services to become healthy...", "info")
-        
+
         while services_to_check and (time.time() - start_time) < timeout:
             self.logger.info(f"Health check iteration - services remaining: {services_to_check}")
             time.sleep(10)
-            
+
             # Get container status
             try:
                 status = self.get_container_status()
@@ -1371,13 +1398,13 @@ services:
             except Exception as e:
                 self.logger.error(f"Error getting container status: {e}")
                 continue
-            
+
             healthy_services = []
             for service in services_to_check:
                 if service in status:
                     service_status = status[service]
                     self.logger.info(f"{service}: status={service_status.get('status')}, health={service_status.get('health')}")
-                    
+
                     if service_status.get('health') == 'healthy':
                         healthy_services.append(service)
                         self.print_status(f"{service.capitalize()} is healthy", "success")
@@ -1386,37 +1413,37 @@ services:
                         self.log_container_logs(service)
                 else:
                     self.logger.warning(f"Service {service} not found in container status")
-                    
+
             # Remove healthy services from check list
             for service in healthy_services:
                 services_to_check.remove(service)
-                
+
         if services_to_check:
             unhealthy = ", ".join(services_to_check)
             self.logger.error(f"Services failed to become healthy: {unhealthy}")
-            
+
             # Log container logs for unhealthy services
             for service in services_to_check:
                 self.log_container_logs(service)
-                
+
             raise Exception(f"Services failed to become healthy within {timeout}s: {unhealthy}")
-        
+
         self.logger.info("All services are healthy")
-        
+
     def setup_kibana_index_patterns(self):
         """Automatically create Kibana index patterns for Cowrie data"""
         try:
             import requests
             import time
-            
+
             self.print_status("Setting up Kibana index patterns...", "info")
-            
+
             # Wait a bit for Kibana to be fully ready
             time.sleep(30)
-            
+
             kibana_port = self.config.get('kibana_port', 5601)
             kibana_url = f"http://localhost:{kibana_port}"
-            
+
             # Check if Kibana is ready
             for attempt in range(5):
                 try:
@@ -1428,7 +1455,7 @@ services:
                     if attempt == 4:
                         raise
                     time.sleep(10)
-            
+
             # Create index pattern for Cowrie
             index_pattern_data = {
                 "attributes": {
@@ -1436,12 +1463,12 @@ services:
                     "timeFieldName": "@timestamp"
                 }
             }
-            
+
             headers = {
                 'Content-Type': 'application/json',
                 'kbn-xsrf': 'true'
             }
-            
+
             # Create the index pattern
             response = requests.post(
                 f"{kibana_url}/api/saved_objects/index-pattern",
@@ -1449,136 +1476,136 @@ services:
                 headers=headers,
                 timeout=30
             )
-            
+
             if response.status_code in [200, 409]:  # 409 means it already exists
                 self.print_status("Kibana index pattern 'cowrie-*' created successfully", "success")
                 self.logger.info("Kibana index pattern created successfully")
             else:
                 self.print_status(f"Failed to create Kibana index pattern: HTTP {response.status_code}", "warning")
                 self.logger.warning(f"Kibana index pattern creation failed: {response.text}")
-                
+
         except Exception as e:
             self.logger.error(f"Failed to setup Kibana index patterns: {e}")
             self.print_status("Could not auto-create Kibana index patterns - you'll need to create manually", "warning")
             self.print_status("Go to Kibana -> Stack Management -> Index Patterns -> Create 'cowrie-*'", "info")
-        
+
     def log_container_logs(self, service: str):
         """Log container logs for debugging"""
         try:
             container_name = self.services.get(service, f"honeymesh-{service}")
             self.logger.info(f"=== Container logs for {container_name} ===")
-            
+
             container = self.docker_client.containers.get(container_name)
             logs = container.logs(tail=50).decode('utf-8', errors='ignore')
             self.logger.info(f"Logs for {container_name}:\n{logs}")
-            
+
         except Exception as e:
             self.logger.error(f"Could not get logs for {service}: {e}")
-            
+
     def stop_services(self) -> bool:
         """Stop all HoneyMesh services"""
         try:
             original_dir = os.getcwd()
             os.chdir(self.data_dir)
-            
+
             self.print_status("Stopping services...", "info")
-            
+
             result = subprocess.run([
                 'docker-compose', 'down'
             ], capture_output=True, text=True, timeout=60)
-            
+
             if result.returncode != 0:
                 self.print_status(f"Warning: {result.stderr}", "warning")
-            
+
             self.print_status("Services stopped", "success")
             return True
-            
+
         except Exception as e:
             self.print_status(f"Error stopping services: {str(e)}", "error")
             return False
         finally:
             os.chdir(original_dir)
-            
+
     def restart_services(self) -> bool:
         """Restart all services"""
         try:
             original_dir = os.getcwd()
             os.chdir(self.data_dir)
-            
+
             self.print_status("Restarting services...", "info")
-            
+
             # Stop services
             subprocess.run(['docker-compose', 'down'], capture_output=True, text=True, timeout=60)
             time.sleep(5)
-            
+
             # Start services
             result = subprocess.run([
                 'docker-compose', 'up', '-d'
             ], capture_output=True, text=True, timeout=300)
-            
+
             if result.returncode != 0:
                 raise Exception(f"Failed to restart services: {result.stderr}")
-                
+
             self.wait_for_services_healthy()
             self.print_status("Services restarted successfully", "success")
             return True
-            
+
         except Exception as e:
             self.print_status(f"Failed to restart services: {str(e)}", "error")
             return False
         finally:
             os.chdir(original_dir)
-            
+
     def remove_deployment(self) -> bool:
         """Remove deployment containers and networks"""
         try:
             original_dir = os.getcwd()
             os.chdir(self.data_dir)
-            
+
             self.print_status("Removing deployment...", "info")
-            
+
             # Stop and remove containers, networks
             result = subprocess.run([
                 'docker-compose', 'down', '--volumes', '--remove-orphans'
             ], capture_output=True, text=True, timeout=120)
-            
+
             if result.returncode != 0:
                 self.print_status(f"Warning during removal: {result.stderr}", "warning")
-                
+
             # Remove unused images
             try:
-                subprocess.run(['docker', 'image', 'prune', '-f'], 
+                subprocess.run(['docker', 'image', 'prune', '-f'],
                              capture_output=True, text=True, timeout=30)
             except:
                 pass  # Not critical if this fails
-                
+
             self.print_status("Deployment removed successfully", "success")
             return True
-            
+
         except Exception as e:
             self.print_status(f"Error during removal: {str(e)}", "error")
             return False
         finally:
             os.chdir(original_dir)
-                
+
     def show_deployment_success(self):
         """Display successful deployment information"""
         self.clear_screen()
         print(f"{Colors.GREEN}{Colors.BOLD}HoneyMesh deployment successful!{Colors.END}\n")
-        
+
         # Get real-time container status
         status = self.get_container_status()
-        
+
         print(f"{Colors.BOLD}Service Status:{Colors.END}")
         print("─" * 65)
         print(f"{'Service':<17} {'Status':<12} {'Port':<8} {'Health':<10}")
         print("─" * 65)
-        
+
         for service, info in status.items():
             service_name = service.replace('_', ' ').title()
             status_color = Colors.GREEN if info['status'] == 'running' else Colors.RED
             health_symbol = "✓" if info['health'] == 'healthy' else "✗"
-            
+
             # Get main port for display
             main_port = ""
             if service == 'cowrie' and self.config.get('ssh_enabled'):
@@ -1589,11 +1616,11 @@ services:
                 main_port = "9200"
             elif service == 'logstash':
                 main_port = "9600"
-                
+
             print(f"{service_name:<17} {status_color}{info['status']:<12}{Colors.END} {main_port:<8} {health_symbol}")
-            
+
         print("─" * 65)
-        
+
         # Show log pipeline status
         try:
             es_healthy = status.get('elasticsearch', {}).get('health') == 'healthy'
@@ -1602,51 +1629,51 @@ services:
             print(f"\nLog Pipeline: Cowrie → Logstash → Elasticsearch {pipeline_status}")
         except:
             print(f"\nLog Pipeline: Status checking...")
-        
+
         print(f"\n{Colors.BOLD}Access Your Honeypots:{Colors.END}")
         print(f"• SSH:    ssh user@localhost -p {self.config['ssh_port']}")
         if self.config.get('telnet_enabled'):
             print(f"• Telnet: telnet localhost {self.config['telnet_port']}")
-            
+
         print(f"\n{Colors.BOLD}Monitor Activity:{Colors.END}")
         print(f"• Dashboard: http://localhost:{self.config['kibana_port']}")
         print(f"• Logs: tail -f {self.data_dir}/logs/cowrie.json")
-        
+
         print(f"\n{Colors.GREEN}[M]{Colors.END} Management menu")
         print(f"{Colors.WHITE}[E]{Colors.END} Exit")
-        
+
         choice = self.get_user_choice("\nEnter your choice: ", ['M', 'E'])
-        
+
         if choice == 'm':
             self.management_console()
         else:
             self.quit_application()
-            
+
     def show_deployment_failure(self):
         """Display deployment failure information"""
         self.clear_screen()
         print(f"{Colors.RED}{Colors.BOLD}Deployment Failed{Colors.END}\n")
         print("The deployment encountered an error and could not complete successfully.")
         print("Please check the system requirements and try again.")
-        
+
         print(f"\n{Colors.YELLOW}[R]{Colors.END} Retry deployment")
         print(f"{Colors.BLUE}[M]{Colors.END} Return to main menu")
         print(f"{Colors.WHITE}[Q]{Colors.END} Quit")
-        
+
         choice = self.get_user_choice("\nEnter your choice: ", ['R', 'M', 'Q'])
-        
+
         if choice == 'r':
             self.deploy_default_environment()
         elif choice == 'm':
             self.show_main_menu()
         else:
             self.quit_application()
-            
+
     def management_console(self):
         """Display the management console"""
         while True:
             self.clear_screen()
-            
+
             # Load existing config if available
             if self.config_file.exists():
                 try:
@@ -1654,10 +1681,10 @@ services:
                         self.config = json.load(f)
                 except:
                     pass
-            
+
             print(f"{Colors.BOLD}HoneyMesh Management Console{Colors.END}\n")
             print(f"Deployment: {self.data_dir}")
-            
+
             # Show real uptime if possible
             try:
                 status = self.get_container_status()
@@ -1665,9 +1692,9 @@ services:
                 print(f"Running Services: {running_containers}/{len(self.services)}")
             except:
                 print("Status: Checking...")
-                
+
             print("─" * 40)
-            
+
             print(f"{Colors.GREEN}[S]{Colors.END} Service status & health")
             print(f"{Colors.BLUE}[L]{Colors.END} Live log monitoring")
             print(f"{Colors.YELLOW}[R]{Colors.END} Restart services")
@@ -1675,9 +1702,9 @@ services:
             print(f"{Colors.MAGENTA}[B]{Colors.END} Backup data & config")
             print(f"{Colors.RED}[D]{Colors.END} Stop & remove deployment")
             print(f"{Colors.WHITE}[E]{Colors.END} Exit to main menu")
-            
+
             choice = self.get_user_choice("\nEnter your choice: ", ['S', 'L', 'R', 'C', 'B', 'D', 'E'])
-            
+
             if choice == 's':
                 self.show_service_status()
             elif choice == 'l':
@@ -1694,39 +1721,39 @@ services:
             elif choice == 'e':
                 self.show_main_menu()
                 break
-                    
+
     def show_service_status(self):
         """Show detailed service status"""
         self.clear_screen()
         print(f"{Colors.BOLD}Service Status & Health Details{Colors.END}\n")
-        
+
         try:
             status = self.get_container_status()
-            
+
             for service, info in status.items():
                 service_name = service.replace('_', ' ').title()
                 print(f"{Colors.BOLD}{service_name}:{Colors.END}")
                 print(f"  Container: {info['name']}")
                 print(f"  Status: {Colors.GREEN if info['status'] == 'running' else Colors.RED}{info['status']}{Colors.END}")
                 print(f"  Health: {Colors.GREEN if info['health'] == 'healthy' else Colors.YELLOW}{info['health']}{Colors.END}")
-                
+
                 if info['ports']:
                     print(f"  Ports: {', '.join([f'{k}→{v}' for k, v in info['ports'].items()])}")
                 else:
                     print(f"  Ports: Internal only")
                 print()
-                
+
         except Exception as e:
             self.print_status(f"Error getting service status: {str(e)}", "error")
-            
+
         self.wait_for_input()
-        
+
     def show_live_logs(self):
         """Show live log monitoring"""
         self.clear_screen()
         print(f"{Colors.BOLD}Live Log Monitoring{Colors.END}\n")
         print("Showing recent Cowrie activity (Press Ctrl+C to return):\n")
-        
+
         try:
             log_file = self.data_dir / "logs" / "cowrie.json"
             if log_file.exists():
@@ -1734,7 +1761,7 @@ services:
                 with open(log_file, 'r') as f:
                     lines = f.readlines()
                     recent_lines = lines[-20:] if len(lines) > 20 else lines
-                    
+
                 for line in recent_lines:
                     try:
                         log_entry = json.loads(line.strip())
@@ -1744,24 +1771,24 @@ services:
                         print(f"{Colors.CYAN}{timestamp}{Colors.END} {Colors.YELLOW}{src_ip}{Colors.END} {message}")
                     except:
                         print(line.strip())
-                        
+
                 print(f"\n{Colors.GREEN}Real-time monitoring would show new entries here...{Colors.END}")
             else:
                 print(f"{Colors.YELLOW}No log file found yet. Honeypot may still be starting up.{Colors.END}")
-                
+
         except Exception as e:
             self.print_status(f"Error reading logs: {str(e)}", "error")
-            
+
         self.wait_for_input("Press Enter to return to management console...")
-        
+
     def restart_services_interactive(self):
         """Restart services with user feedback"""
         self.clear_screen()
         print(f"{Colors.BOLD}Restart Services{Colors.END}\n")
         print("This will restart all HoneyMesh services. Any active connections will be dropped.")
-        
+
         confirm = self.get_yes_no_input("Continue with restart", False)
-        
+
         if confirm:
             if self.restart_services():
                 self.print_status("All services restarted successfully", "success")
@@ -1769,16 +1796,16 @@ services:
                 self.print_status("Some services may have failed to restart", "warning")
         else:
             self.print_status("Restart cancelled", "info")
-            
+
         self.wait_for_input()
-        
+
     def change_configuration(self):
         """Change deployment configuration"""
         self.clear_screen()
         print(f"{Colors.BOLD}Change Configuration{Colors.END}\n")
         print("Configuration changes require service restart to take effect.")
         print("Current configuration:")
-        
+
         if self.config:
             print(f"  SSH Port: {self.config.get('ssh_port', 'N/A')}")
             print(f"  Telnet Enabled: {self.config.get('telnet_enabled', 'N/A')}")
@@ -1786,56 +1813,56 @@ services:
                 print(f"  Telnet Port: {self.config.get('telnet_port', 'N/A')}")
             print(f"  Hostname: {self.config.get('hostname', 'N/A')}")
             print(f"  Kibana Port: {self.config.get('kibana_port', 'N/A')}")
-        
+
         print(f"\n{Colors.YELLOW}Note: Advanced configuration editing will be available in future versions.{Colors.END}")
         print("For now, you can manually edit the docker-compose.yml file in the data directory.")
-        
+
         self.wait_for_input()
-        
+
     def backup_deployment(self):
         """Backup deployment data and configuration"""
         self.clear_screen()
         print(f"{Colors.BOLD}Backup Deployment{Colors.END}\n")
-        
+
         try:
             backup_dir = Path(f"./honeymesh-backup-{int(time.time())}")
             backup_dir.mkdir(exist_ok=True)
-            
+
             self.print_status("Creating backup...", "info")
-            
+
             # Copy configuration files
             if self.config_file.exists():
                 shutil.copy2(self.config_file, backup_dir / "config.json")
-                
+
             if self.docker_compose_file.exists():
                 shutil.copy2(self.docker_compose_file, backup_dir / "docker-compose.yml")
-                
+
             # Copy logs directory
             logs_dir = self.data_dir / "logs"
             if logs_dir.exists():
                 shutil.copytree(logs_dir, backup_dir / "logs")
-                
-            # Copy configs directory  
+
+            # Copy configs directory
             configs_dir = self.data_dir / "configs"
             if configs_dir.exists():
                 shutil.copytree(configs_dir, backup_dir / "configs")
-                
+
             self.print_status(f"Backup created successfully at {backup_dir}", "success")
-            
+
         except Exception as e:
             self.print_status(f"Backup failed: {str(e)}", "error")
-            
+
         self.wait_for_input()
-        
+
     def stop_and_remove_deployment(self) -> bool:
         """Stop and remove the deployment"""
         self.clear_screen()
         print(f"{Colors.RED}{Colors.BOLD}Stop & Remove Deployment{Colors.END}\n")
         print("This will stop all honeypot services and remove containers.")
         print(f"{Colors.YELLOW}WARNING: Containers will be removed but log data will be preserved.{Colors.END}")
-        
+
         confirm = self.get_yes_no_input("Are you sure you want to continue", False)
-        
+
         if confirm:
             if self.remove_deployment():
                 self.print_status("Deployment stopped and removed successfully", "success")
@@ -1845,23 +1872,23 @@ services:
             else:
                 self.print_status("Failed to completely remove deployment", "error")
                 self.wait_for_input()
-                
+
         return False
-        
+
     def create_new_deployment(self):
         """Create a new deployment (when existing one is detected)"""
         self.deploy_default_environment()
-        
+
     def remove_existing_deployment(self):
         """Remove existing deployment and start fresh"""
         if self.stop_and_remove_deployment():
             self.deploy_default_environment()
-            
+
     def quit_application(self):
         """Exit the application"""
         print(f"\n{Colors.CYAN}Thank you for using HoneyMesh!{Colors.END}")
         sys.exit(0)
-        
+
     def run(self):
         """Main application entry point"""
         try:
@@ -1874,13 +1901,13 @@ services:
 #                print("• Log files will be owned by root")
 #                print("• Security risks if honeypot is compromised")
 #                print("• Docker group membership allows non-root Docker access")
-#                
+
 #                print(f"\n{Colors.GREEN}Recommended approach:{Colors.END}")
 #                print("1. Exit this script (Ctrl+C)")
 #                print("2. Add your user to docker group: sudo usermod -aG docker $USER")
 #                print("3. Logout and login again")
 #                print("4. Run script as normal user: python3 honeymesh.py")
-#                
+
 #                choice = input(f"\n{Colors.RED}Continue running as root anyway? [y/N]: {Colors.END}").strip().lower()
 #                if choice not in ['y', 'yes']:
 #                    print(f"{Colors.CYAN}Exiting for security. Please run as normal user.{Colors.END}")
@@ -1888,19 +1915,19 @@ services:
 #                else:
 #                    print(f"{Colors.YELLOW}Continuing as root (not recommended)...{Colors.END}")
 #                    time.sleep(2)
-            
+
             # Run dependency check
             print(f"{Colors.BOLD}HoneyMesh - Checking Dependencies{Colors.END}\n")
-            
+
             checker = DependencyChecker()
             if not checker.check_critical_dependencies():
                 print(f"{Colors.RED}Critical dependencies missing!{Colors.END}")
                 print("Errors found:")
                 for error in checker.errors:
                     print(f"  {Colors.RED}[x]{Colors.END} {error}")
-                    
+
                 checker.print_quick_fix()
-                
+
                 choice = input(f"\n{Colors.YELLOW}Continue anyway? [y/N]: {Colors.END}").strip().lower()
                 if choice not in ['y', 'yes']:
                     print(f"{Colors.CYAN}Please install dependencies and try again.{Colors.END}")
@@ -1908,10 +1935,10 @@ services:
             else:
                 print(f"{Colors.GREEN}All critical dependencies satisfied!{Colors.END}")
                 time.sleep(1)
-            
+
             # Proceed to main menu
             self.show_main_menu()
-            
+
         except KeyboardInterrupt:
             print(f"\n\n{Colors.YELLOW}Operation cancelled by user{Colors.END}")
             self.quit_application()
