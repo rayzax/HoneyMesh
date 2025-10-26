@@ -1866,28 +1866,28 @@ services:
         """Main application entry point"""
         try:
             # Check if running as root/sudo - this should NOT be the case
-            if os.geteuid() == 0:
-                self.clear_screen()
-                print(f"{Colors.RED}{Colors.BOLD}WARNING: Running as root/sudo detected!{Colors.END}\n")
-                print(f"{Colors.YELLOW}HoneyMesh should NOT be run as root for security reasons:{Colors.END}")
-                print("• Docker containers will run with elevated privileges")
-                print("• Log files will be owned by root")
-                print("• Security risks if honeypot is compromised")
-                print("• Docker group membership allows non-root Docker access")
-                
-                print(f"\n{Colors.GREEN}Recommended approach:{Colors.END}")
-                print("1. Exit this script (Ctrl+C)")
-                print("2. Add your user to docker group: sudo usermod -aG docker $USER")
-                print("3. Logout and login again")
-                print("4. Run script as normal user: python3 honeymesh.py")
-                
-                choice = input(f"\n{Colors.RED}Continue running as root anyway? [y/N]: {Colors.END}").strip().lower()
-                if choice not in ['y', 'yes']:
-                    print(f"{Colors.CYAN}Exiting for security. Please run as normal user.{Colors.END}")
-                    sys.exit(1)
-                else:
-                    print(f"{Colors.YELLOW}Continuing as root (not recommended)...{Colors.END}")
-                    time.sleep(2)
+#            if os.geteuid() == 0:
+#                self.clear_screen()
+#                print(f"{Colors.RED}{Colors.BOLD}WARNING: Running as root/sudo detected!{Colors.END}\n")
+#                print(f"{Colors.YELLOW}HoneyMesh should NOT be run as root for security reasons:{Colors.END}")
+#                print("• Docker containers will run with elevated privileges")
+#                print("• Log files will be owned by root")
+#                print("• Security risks if honeypot is compromised")
+#                print("• Docker group membership allows non-root Docker access")
+#                
+#                print(f"\n{Colors.GREEN}Recommended approach:{Colors.END}")
+#                print("1. Exit this script (Ctrl+C)")
+#                print("2. Add your user to docker group: sudo usermod -aG docker $USER")
+#                print("3. Logout and login again")
+#                print("4. Run script as normal user: python3 honeymesh.py")
+#                
+#                choice = input(f"\n{Colors.RED}Continue running as root anyway? [y/N]: {Colors.END}").strip().lower()
+#                if choice not in ['y', 'yes']:
+#                    print(f"{Colors.CYAN}Exiting for security. Please run as normal user.{Colors.END}")
+#                    sys.exit(1)
+#                else:
+#                    print(f"{Colors.YELLOW}Continuing as root (not recommended)...{Colors.END}")
+#                    time.sleep(2)
             
             # Run dependency check
             print(f"{Colors.BOLD}HoneyMesh - Checking Dependencies{Colors.END}\n")
