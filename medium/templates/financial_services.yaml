@@ -1,0 +1,284 @@
+# Financial Services Template
+# Simulates a core banking production server
+
+metadata:
+  name: "Financial Services"
+  description: "Simulates a banking/financial services production server"
+  category: "financial"
+  version: "1.0"
+  author: "HoneyMesh"
+
+configuration:
+  hostname: "core-banking-prd01.firstnational.com"
+  ssh_banner: "SSH-2.0-OpenSSH_8.2p1 RHEL-8"
+  timezone: "US/Eastern"
+
+users:
+  bankadmin:
+    password: "Bank2024!"
+    uid: 1001
+    gid: 1001
+    home: "/home/bankadmin"
+    shell: "/bin/bash"
+    gecos: "Bank Administrator"
+  
+  finops:
+    password: "Finance123"
+    uid: 1002
+    gid: 1002
+    home: "/home/finops"
+    shell: "/bin/bash"
+    gecos: "Financial Operations"
+  
+  compliance:
+    password: "Comply2024!"
+    uid: 1003
+    gid: 1003
+    home: "/home/compliance"
+    shell: "/bin/bash"
+    gecos: "Compliance Officer"
+  
+  dbadmin:
+    password: "Database123"
+    uid: 1004
+    gid: 1004
+    home: "/home/dbadmin"
+    shell: "/bin/bash"
+    gecos: "Database Administrator"
+
+filesystem:
+  proc: {}
+  sys: {}
+  dev: {}
+  run: {}
+  tmp: {}
+  
+  usr:
+    bin: {}
+    sbin: {}
+    local:
+      bin: {}
+  
+  etc:
+    banking: {}
+    oracle: {}
+    ssl:
+      certs: {}
+      private: {}
+  
+  var:
+    log:
+      banking: {}
+      transactions: {}
+      audit: {}
+    banking:
+      data:
+        accounts: {}
+        transactions: {}
+        customers: {}
+      backup: {}
+      archive: {}
+  
+  opt:
+    banking:
+      core: {}
+      swift: {}
+      ach: {}
+  
+  home:
+    bankadmin: {}
+    finops: {}
+    compliance: {}
+    dbadmin: {}
+  
+  root: {}
+  
+  banking:
+    core:
+      engine: {}
+      config: {}
+    swift:
+      messages: {}
+      archive: {}
+    ach:
+      processing: {}
+      settlement: {}
+    cards:
+      processing: {}
+      fraud: {}
+    loans:
+      origination: {}
+      servicing: {}
+    compliance:
+      aml: {}
+      kyc: {}
+      reports: {}
+
+files:
+  /etc/hostname:
+    content: "core-banking-prd01.firstnational.com"
+  
+  /etc/motd:
+    content: |
+      ================================================================================
+                            FIRST NATIONAL BANK
+                       CORE BANKING PRODUCTION SYSTEM
+      ================================================================================
+      
+      AUTHORIZED ACCESS ONLY - All activity monitored and logged
+      
+      System: CORE BANKING SYSTEM v8.5
+      Environment: PRODUCTION
+      Database: BANKPRD (Oracle 19c)
+      
+      CRITICAL NOTICES:
+      - Transaction processing system is ACTIVE
+      - Daily settlement window: 23:00-01:00 EST
+      - Report all security incidents immediately
+      - PCI-DSS audit mode enabled
+      
+      Support Contact: IT Operations x5500
+      Security Hotline: x5911
+      
+      ================================================================================
+  
+  /banking/core/config/system.cfg:
+    content: |
+      # Core Banking System Configuration
+      [core_banking]
+      environment=production
+      database_host=banking-db-prd01.internal
+      database_port=1521
+      database_service=BANKPRD
+      swift_enabled=true
+      ach_enabled=true
+      card_processing=enabled
+      
+      [compliance]
+      aml_monitoring=enabled
+      transaction_limit_checking=enabled
+      fraud_detection=active
+      audit_level=full
+      pci_dss_mode=enabled
+      
+      [integration]
+      swift_network=live
+      fed_wire=enabled
+      clearing_house=CHIPS
+      card_network=VISA,MASTERCARD,AMEX
+      
+      [security]
+      encryption=AES256
+      tls_version=1.3
+      session_timeout=900
+      password_policy=strict
+  
+  /banking/swift/messages/mt103.log:
+    content: |
+      2024-10-13 09:15:23 MT103 USD 125000.00 CHASE -> HSBC REF:SW2024101301
+      2024-10-13 09:16:45 MT103 EUR 85000.00 DEUTSCHE -> BARCLAYS REF:SW2024101302
+      2024-10-13 09:18:12 MT103 GBP 55000.00 HSBC -> NATWEST REF:SW2024101303
+      2024-10-13 09:20:34 MT103 USD 245000.00 CITI -> JPMORGAN REF:SW2024101304
+      2024-10-13 09:22:15 MT103 EUR 165000.00 BNP -> SOCGEN REF:SW2024101305
+  
+  /banking/ach/processing/batch_summary.log:
+    content: |
+      ACH Batch Processing Summary - 2024-10-13
+      
+      Batch ID: ACH20241013-001
+      Total Transactions: 12,547
+      Total Amount: $45,892,345.67
+      
+      Credits: 6,823 ($28,456,123.45)
+      Debits: 5,724 ($17,436,222.22)
+      
+      Status: PROCESSED
+      Settlement Date: 2024-10-14
+      
+      Exceptions: 12 (0.10%)
+      - Insufficient funds: 8
+      - Invalid account: 4
+  
+  /var/log/banking/transactions.log:
+    content: |
+      2024-10-13 09:30:15 [WIRE] Outgoing wire $125,000.00 to HSBC - Account: ****4567
+      2024-10-13 09:31:22 [ACH] Batch processed - 1,245 transactions - $2,345,678.90
+      2024-10-13 09:32:45 [CARD] Card authorization $543.21 - Merchant: Amazon
+      2024-10-13 09:33:18 [LOAN] Loan payment received - Account: L-445667 - $2,456.78
+      2024-10-13 09:34:50 [DEPOSIT] Deposit processed - Account: ****8901 - $5,000.00
+  
+  /var/log/audit/compliance.log:
+    content: |
+      2024-10-13 09:00:00 [AML] Daily AML screening started
+      2024-10-13 09:15:23 [WIRE] Large wire flagged for review - $125,000.00
+      2024-10-13 09:20:45 [KYC] Customer identity verification completed - ID: C-445667
+      2024-10-13 09:25:12 [FRAUD] Suspicious activity detected - Card: ****1234
+      2024-10-13 09:30:00 [AUDIT] User 'finops' accessed sensitive data - Account records
+
+custom_commands:
+  bank-status:
+    path: "/usr/local/bin/bank-status"
+    content: |
+      #!/bin/bash
+      cat << 'EOL'
+      Core Banking System Status
+      Generated: October 13, 2024 09:45:00 EST
+      Server: core-banking-prd01.firstnational.com
+      
+      === BANKING SERVICES ===
+      Core Banking Engine    : RUNNING (PID: 1234)
+      SWIFT Gateway         : RUNNING (PID: 1235)
+      ACH Processor         : RUNNING (PID: 1236)
+      Card Processing       : RUNNING (PID: 1237)
+      Fraud Detection       : RUNNING (PID: 1238)
+      
+      === DATABASE STATUS ===
+      Primary Database      : ONLINE
+      - Size: 4.5TB
+      - Active Connections: 234/500
+      - Response Time: 8ms avg
+      - Last Backup: 2024-10-13 02:00:00
+      
+      === TRANSACTION VOLUME (Today) ===
+      Wire Transfers        : 1,247 ($245M)
+      ACH Transactions      : 45,678 ($123M)
+      Card Authorizations   : 234,567 ($12M)
+      Loan Payments         : 3,456 ($8.9M)
+      
+      === COMPLIANCE STATUS ===
+      AML Screening         : ACTIVE
+      Fraud Detection       : ACTIVE
+      PCI-DSS Compliance    : ENABLED
+      SOX Controls          : ACTIVE
+      
+      === SYSTEM RESOURCES ===
+      CPU Usage            : 72%
+      Memory Usage         : 68% (54GB/80GB)
+      Disk Usage           : /banking 65% full
+      Network Traffic      : 345 Mbps
+      
+      === RECENT ALERTS ===
+      [INFO] Daily settlement completed successfully
+      [WARN] High transaction volume - monitor capacity
+      [INFO] Fraud detection blocked 12 suspicious transactions
+      EOL
+  
+  swift-status:
+    path: "/usr/local/bin/swift-status"
+    content: |
+      #!/bin/bash
+      echo "SWIFT Network Status"
+      echo "===================="
+      echo ""
+      echo "Connection: ACTIVE"
+      echo "Network: SWIFTNet Live"
+      echo "BIC: FNBKUS33XXX"
+      echo ""
+      echo "Message Statistics (Today):"
+      echo "  MT103 (Payments):     1,247"
+      echo "  MT202 (Transfers):      456"
+      echo "  MT940 (Statements):     234"
+      echo "  MT950 (Confirmations):  189"
+      echo ""
+      echo "Total Messages: 2,126"
+      echo "Average Processing Time: 0.8 seconds"
