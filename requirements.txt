@@ -1,0 +1,12 @@
+# HoneyMesh Python Dependencies
+# Self-hosted honeypot deployment platform
+# https://github.com/rayzax/HoneyMesh
+
+# Docker Python SDK - Required for Docker container management
+docker>=6.0.0
+
+# PyYAML - Required for YAML configuration file parsing
+PyYAML>=6.0
+
+# Requests - Required for HTTP health checks and API calls
+requests>=2.28.0
