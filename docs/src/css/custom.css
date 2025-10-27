@@ -562,6 +562,45 @@ h3 {
   font-size: 1.8rem;
 }
 
+.installation-steps-section {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  text-align: left;
+  line-height: 1.8;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.installation-steps-section h2 {
+  color: var(--ifm-color-primary);
+  border-bottom: 3px solid var(--ifm-color-primary);
+  display: inline-block;
+  padding-bottom: 0.25rem;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+.installation-steps-section h3 {
+  color: var(--ifm-color-primary);
+  margin-top: 1.5rem;
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.installation-steps-section pre {
+  background-color: var(--ifm-code-background);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.installation-steps-section code {
+  font-family: var(--ifm-font-family-monospace);
+}
+
 .credits-section p {
   font-size: 1.05rem;
   color: var(--ifm-font-color-base);
