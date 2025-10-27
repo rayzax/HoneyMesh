@@ -82,7 +82,7 @@ themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */ ({
     title: 'HoneyMesh',
     logo: { 
       alt: 'HoneyMesh logo',
-      src: 'img/HoneyMesh_PictureLogo.png',
+      src: 'img/HoneyMesh_PictureLogo_Favicon2.png',
     },
   },
  
