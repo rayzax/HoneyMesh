@@ -512,17 +512,32 @@ The authors are not responsible for misuse or any damages caused by this softwar
         return config
 
     def get_port_input(self, prompt: str, default: int) -> int:
-        """Get port number from user with validation"""
+        """Get port number from user with validation - checks for actual conflicts"""
         while True:
             try:
                 port_str = input(f"{prompt} [{default}]: ").strip()
                 if not port_str:
-                    return default
-                port = int(port_str)
-                if 1024 <= port <= 65535:
-                    return port
+                    port = default
                 else:
-                    print(f"{Colors.RED}Port must be between 1024 and 65535{Colors.END}")
+                    port = int(port_str)
+            
+                # Validate port range (OS limitation)
+                if not (1 <= port <= 65535):
+                    print(f"{Colors.RED}Port must be between 1 and 65535{Colors.END}")
+                    continue
+            
+                    # Check if port is already in use
+                if not self.is_port_available(port):
+                    print(f"{Colors.RED}Port {port} is already in use{Colors.END}")
+                    print(f"{Colors.YELLOW}Choose a different port or stop the service using it{Colors.END}")
+                    continue
+            
+                    # Port is valid and available
+                if port < 1024:
+                    print(f"{Colors.YELLOW}Note: Port {port} is privileged (Docker will handle this){Colors.END}")
+            
+                return port
+            
             except ValueError:
                 print(f"{Colors.RED}Please enter a valid port number{Colors.END}")
 
