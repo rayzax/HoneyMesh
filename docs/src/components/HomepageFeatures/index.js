@@ -1,11 +1,13 @@
+import React from 'react';
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 
+// Use require(...).default (or import at top) to get the image URL string
 const FeatureList = [
   {
     title: 'Easy to Deploy',
-    Svg: require('@site/static/img/EasyToDeploy_HoneyMesh2.png').default,
+    img: require('@site/static/img/EasyToDeploy_HoneyMesh.png').default,
     description: (
       <>
         HoneyMesh is built from the ground up to make honeypot deployment simple
@@ -16,7 +18,7 @@ const FeatureList = [
   },
   {
     title: 'Focus on Threat Intelligence',
-    Svg: require('@site/static/img/HoneyMesh_Laptop.png').default,
+    img: require('@site/static/img/HoneyMesh_Laptop.png').default,
     description: (
       <>
        HoneyMesh lets you focus on capturing and analyzing attacker behavior while
@@ -28,7 +30,7 @@ const FeatureList = [
   },
   {
     title: 'Powered by Elastic and Python',
-    Svg: require('@site/static/img/HoneyMesh_Workstation.png').default,
+    img: require('@site/static/img/HoneyMesh_Workstation.png').default,
     description: (
       <>
         Built with Python and the Elastic Stack, HoneyMesh offers a flexible, modern
@@ -40,11 +42,19 @@ const FeatureList = [
   },
 ];
 
-function Feature({Svg, title, description}) {
+function Feature({ img, title, description }) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+        {/* Render the URL string as an <img> tag */}
+        {img && (
+          <img
+            src={img}
+            alt={title}
+            className={styles.featureSvg} /* reuse your css class if desired */
+            style={{ maxWidth: '100%', height: 'auto' }}
+          />
+        )}
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
