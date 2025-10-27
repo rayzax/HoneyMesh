@@ -12,7 +12,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const config = {
   title: 'HoneyMesh',
   tagline: 'Empowering cybersecurity professionals, students, and researchers with an accessible, automated, customizable honeypot framework that makes threat intelligence and proactive security practices more accessible.',
-  favicon: 'img/HoneyMesh_PictureLogo.png',
+  favicon: 'img/HoneyMesh_PictureLogo_Favicon2.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -74,7 +74,7 @@ const config = {
     ],
   ],
 themeConfig: /** @type {import('@docusaurus/preset-classic').ThemeConfig} */ ({
-  image: 'img/HoneyMesh_PictureLogo.png',
+  image: 'img/HoneyMesh_PictureLogo_Favicon2.png',
   colorMode: { 
     respectPrefersColorScheme: true,
   },
