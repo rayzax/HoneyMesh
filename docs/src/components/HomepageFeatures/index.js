@@ -4,32 +4,37 @@ import styles from './styles.module.css';
 
 const FeatureList = [
   {
-    title: 'Easy to Use',
+    title: 'Easy to Deploy',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        HoneyMesh is built from the ground up to make honeypot deployment simple
+        and fast. With just a few commands, you can spin up fully configured honeypots
+        using Docker automation. No complex setup required.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Focus on Threat Intelligence',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+       HoneyMesh lets you focus on capturing and analyzing attacker behavior while
+        it handles the heavy lifting. It automates container management, log forwarding,
+        and monitoring, so you can spend more time learning from real attacks, not managing
+        infrastructure.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Powered by Elastic and Python',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Built with Python and the Elastic Stack, HoneyMesh offers a flexible, modern
+        foundation for cybersecurity research. Customize dashboards, enrich telemetry,
+        and extend honeypot configurations, all while keeping a unified interface for
+        visibility and control.
       </>
     ),
   },
