@@ -5,7 +5,7 @@ import styles from './styles.module.css';
 const FeatureList = [
   {
     title: 'Easy to Deploy',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    Svg: require('@site/static/img/EasyToDeploy_HoneyMesh.png').default,
     description: (
       <>
         HoneyMesh is built from the ground up to make honeypot deployment simple
@@ -16,7 +16,7 @@ const FeatureList = [
   },
   {
     title: 'Focus on Threat Intelligence',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    Svg: require('@site/static/img/HoneyMesh_Laptop.png').default,
     description: (
       <>
        HoneyMesh lets you focus on capturing and analyzing attacker behavior while
@@ -28,7 +28,7 @@ const FeatureList = [
   },
   {
     title: 'Powered by Elastic and Python',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    Svg: require('@site/static/img/HoneyMesh_Workstation.png').default,
     description: (
       <>
         Built with Python and the Elastic Stack, HoneyMesh offers a flexible, modern
