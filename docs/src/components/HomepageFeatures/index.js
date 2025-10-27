@@ -5,7 +5,7 @@ import styles from './styles.module.css';
 const FeatureList = [
   {
     title: 'Easy to Deploy',
-    Svg: require('@site/static/img/EasyToDeploy_HoneyMesh.png').default,
+    Svg: require('@site/static/img/EasyToDeploy_HoneyMesh2.png').default,
     description: (
       <>
         HoneyMesh is built from the ground up to make honeypot deployment simple
