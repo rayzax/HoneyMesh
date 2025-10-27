@@ -30,7 +30,7 @@ const FeatureList = [
   },
   {
     title: 'Powered by Elastic and Python',
-    img: require('@site/static/img/HoneyMesh_Workstation.png').default,
+    img: require('@site/static/img/HoneyMesh_Workstation2.png').default,
     description: (
       <>
         Built with Python and the Elastic Stack, HoneyMesh offers a flexible, modern
