@@ -18,15 +18,15 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 try:
     from honeymesh import Colors
-    from generatePickle import generate_pickle
-    from template_loader import (
+    from .generatePickle import generate_pickle
+    from .template_loader import (
         TemplateLibrary,
         YAMLTemplate,
         create_filesystem_from_template,
         write_files_from_template,
         create_custom_commands_from_template
     )
-    from medium.templateBuilder import TemplateBuilder
+    from .templateBuilder import TemplateBuilder
 except ImportError as e:
     print(f"Import error: {e}")
     print("Make sure all required modules are in the medium/ directory")
