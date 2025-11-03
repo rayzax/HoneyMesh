@@ -89,7 +89,7 @@ python3 honeymesh.py
   <h3>Starting HoneyMesh:</h3>
   <pre>
     <code className="language-bash">
-python3 honeymesh.py
+sudo python3 honeymesh.py
     </code>
   </pre>
 
@@ -170,6 +170,7 @@ ssh user@localhost -p 2222
   </pre>
 
   <p>If the connection succeeds, your HoneyMesh honeypot is live and ready for analysis.</p>
+
 
 
 
