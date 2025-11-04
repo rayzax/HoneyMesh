@@ -1,5 +1,5 @@
-<section className="overview-section">
-  <section className="installation-section" id="installation-steps">
+<section class="overview-section">
+  <section class="installation-section" id="installation-steps">
     <h2><strong>Installation Steps</strong></h2>
 
     <h3>Starting HoneyMesh:</h3>
@@ -42,49 +42,49 @@ http://localhost:5601
 tail -f ./honeypot-data/logs/cowrie.json
       </code>
     </pre>
+  </section>
 
-    <h3>1. Clone the HoneyMesh Repository</h3>
-    <pre>
-      <code className="language-bash">
+  <h3>1. Clone the HoneyMesh Repository</h3>
+  <pre>
+    <code className="language-bash">
 git clone https://github.com/rayzax/HoneyMesh.git
-      </code>
-    </pre>
+    </code>
+  </pre>
 
-    <h3>2. Run the Dependency Checker</h3>
-    <pre>
-      <code className="language-bash">
+  <h3>2. Run the Dependency Checker</h3>
+  <pre>
+    <code className="language-bash">
 cd HoneyMesh/
 ls
 sudo ./installDependencies.sh
-      </code>
-    </pre>
+    </code>
+  </pre>
 
-    <h3>3. Follow the Next Steps</h3>
-    <p>After dependencies are installed, proceed with deployment using the main HoneyMesh script.</p>
+  <h3>3. Follow the Next Steps</h3>
+  <p>After dependencies are installed, proceed with deployment using the main HoneyMesh script.</p>
 
-    <h3>4. Run HoneyMesh</h3>
-    <pre>
-      <code className="language-bash">
+  <h3>4. Run HoneyMesh</h3>
+  <pre>
+    <code className="language-bash">
 sudo python3 HoneyMesh.py
-      </code>
-    </pre>
+    </code>
+  </pre>
 
-    <h3>5. Recommended Mode</h3>
-    <p>It is recommended to run HoneyMesh in <strong>medium interaction</strong> mode for balanced realism and safety.</p>
+  <h3>5. Recommended Mode</h3>
+  <p>It is recommended to run HoneyMesh in <strong>medium interaction</strong> mode for balanced realism and safety.</p>
 
-    <h3>6. Configure and Deploy</h3>
-    <p>Follow the on-screen wizard to configure honeypots, define logging paths, and enable ELK integration.</p>
+  <h3>6. Configure and Deploy</h3>
+  <p>Follow the on-screen wizard to configure honeypots, define logging paths, and enable ELK integration.</p>
 
-    <h3>7. Deployment Success</h3>
-    <p>Once setup completes successfully, the honeypots will begin capturing activity.</p>
+  <h3>7. Deployment Success</h3>
+  <p>Once setup completes successfully, the honeypots will begin capturing activity.</p>
 
-    <h3>8. SSH Test</h3>
-    <pre>
-      <code className="language-bash">
+  <h3>8. SSH Test</h3>
+  <pre>
+    <code className="language-bash">
 ssh user@localhost -p 2222
-      </code>
-    </pre>
+    </code>
+  </pre>
 
-    <p>If the connection succeeds, your HoneyMesh honeypot is live and ready for analysis.</p>
-  </section>
+  <p>If the connection succeeds, your HoneyMesh honeypot is live and ready for analysis.</p>
 </section>
