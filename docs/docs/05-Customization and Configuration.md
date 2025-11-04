@@ -2,9 +2,6 @@
   <h2><strong>Configuration & Customization</strong></h2>
 </section>
 
-<section className="configuration-section">
-  <h2><strong>Configuration & Customization</strong></h2>
-
   <h3>Port Configuration:</h3>
   <ul className="config-list">
     <li><strong>SSH Honeypot:</strong> 2222 (configurable during setup)</li>
