@@ -1,5 +1,9 @@
+<section className="builtwith-section">
+  <h2><strong></Configuration & Custimizaton</strong></h2>
+></h2>
+
 <section class="configuration-section">
-  <h2><strong>Configuration & Logging</strong></h2>
+  <h2><strong>Configuration & Custimizaton</strong></h2>
 
   <h3>Port Configuration:</h3>
   <ul class="config-list">
