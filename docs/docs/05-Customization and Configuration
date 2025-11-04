@@ -1,3 +1,7 @@
+<section className="builtwith-section">
+  <h2><strong>Configuration & Customization</strong></h2>
+</section>
+
 <section className="configuration-section">
   <h2><strong>Configuration & Customization</strong></h2>
 
