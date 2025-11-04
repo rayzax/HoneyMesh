@@ -1,22 +1,19 @@
-<section className="builtwith-section">
-  <h2><strong></Configuration & Custimizaton</strong></h2>
-></h2>
-
-<section class="configuration-section">
-  <h2><strong>Configuration & Custimizaton</strong></h2>
+<section className="configuration-section">
+  <h2><strong>Configuration & Customization</strong></h2>
 
   <h3>Port Configuration:</h3>
-  <ul class="config-list">
+  <ul className="config-list">
     <li><strong>SSH Honeypot:</strong> 2222 (configurable during setup)</li>
     <li><strong>Telnet Honeypot:</strong> 2223 (optional)</li>
     <li><strong>Kibana Dashboard:</strong> 5601 (configurable)</li>
     <li><strong>Elasticsearch:</strong> 9200</li>
   </ul>
 
-<h3>Customization:</h3>
-  <ul class="config-list">
+  <h3>Customization:</h3>
+  <ul className="config-list">
     <li>Modify hostname and SSH banner in <code>cowrie.cfg</code></li>
     <li>Choose from a library of custom honeypots that mimic vulnerable industry-specific servers</li>
     <li>Build your own custom honeypots and filesystems</li>
     <li>Configure log retention and storage paths</li>
   </ul>
+</section>
