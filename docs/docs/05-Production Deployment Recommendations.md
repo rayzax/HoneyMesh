@@ -2,7 +2,7 @@
 
 ## Overview
 
-Deploy HoneyMesh on an isolated VPS (virtual private server) on its own virtual network. This guide uses Digital Ocean as an example, but the same principles apply to other cloud providers.
+Deploy HoneyMesh on an isolated VPS (virtual private server) on its own virtual network.
 
 ## Step 1: Provision a Cloud VM
 
