@@ -88,7 +88,7 @@ class MediumDeploymentManager:
         print(f"{Colors.CYAN}[2]{Colors.END} Build custom template wizard")
         print(f"{Colors.WHITE}[Q]{Colors.END} Return to main menu")
 
-        valid_choices = ['2', '3', 'Q']
+        valid_choices = ['2', 'Q']
         if existing_templates:
             valid_choices.insert(0, '1')
 
@@ -96,7 +96,7 @@ class MediumDeploymentManager:
 
         if choice == '1' and existing_templates:
             self.use_existing_template()
-        elif choice == '3':
+        elif choice == '2':
             self.build_custom_template()
         elif choice == 'q':
             return
