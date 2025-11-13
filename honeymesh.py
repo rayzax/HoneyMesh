@@ -272,33 +272,129 @@ The authors are not responsible for misuse or any damages caused by this softwar
         except DockerException:
             return False
 
-    def get_container_status(self) -> Dict[str, Dict]:
-        """Get status of all HoneyMesh containers"""
+    def get_all_honeymesh_deployments(self) -> Dict[str, List]:
+        """
+        Detect all HoneyMesh deployments (default + medium interaction)
+
+        Returns:
+            Dict with deployment names as keys and list of containers as values
+        """
+        deployments = {}
+
+        try:
+            if not self.docker_client:
+                self.docker_client = docker.from_env()
+
+            containers = self.docker_client.containers.list(all=True)
+
+            # Find all honeymesh containers
+            for container in containers:
+                if 'honeymesh' in container.name.lower():
+                    # Parse deployment name from container name
+                    # Pattern: honeymesh-<service>-<deployment> or honeymesh-<service>
+                    parts = container.name.split('-', 2)
+
+                    if len(parts) >= 3:
+                        # Medium interaction: honeymesh-elasticsearch-epic-prod-01
+                        deployment_name = parts[2]
+                    elif len(parts) == 2:
+                        # Default deployment: honeymesh-cowrie
+                        deployment_name = 'default'
+                    else:
+                        continue
+
+                    if deployment_name not in deployments:
+                        deployments[deployment_name] = []
+
+                    deployments[deployment_name].append(container)
+
+        except DockerException as e:
+            self.logger.error(f"Error detecting deployments: {e}")
+
+        return deployments
+
+    def get_container_status(self, deployment_name: str = 'default') -> Dict[str, Dict]:
+        """
+        Get status of HoneyMesh containers for a specific deployment
+
+        Args:
+            deployment_name: Name of deployment ('default' for default deployment)
+
+        Returns:
+            Dict with service names as keys and status info as values
+        """
         status = {}
         try:
             if not self.docker_client:
                 self.docker_client = docker.from_env()
 
-            for service, container_name in self.services.items():
-                try:
-                    container = self.docker_client.containers.get(container_name)
-                    status[service] = {
-                        'name': container_name,
+            # Get all containers for this deployment
+            all_deployments = self.get_all_honeymesh_deployments()
+
+            if deployment_name not in all_deployments:
+                return status
+
+            deployment_containers = all_deployments[deployment_name]
+
+            # Map containers to services
+            for container in deployment_containers:
+                # Determine service type from container name
+                service_type = self._extract_service_type(container.name, deployment_name)
+
+                if service_type:
+                    status[service_type] = {
+                        'name': container.name,
                         'status': container.status,
                         'health': self.check_container_health(container),
                         'ports': self.get_container_ports(container)
                     }
-                except:
-                    status[service] = {
-                        'name': container_name,
-                        'status': 'not found',
-                        'health': 'unknown',
-                        'ports': {}
-                    }
+
         except DockerException as e:
             self.print_status(f"Error accessing Docker: {str(e)}", "error")
 
         return status
+
+    def _extract_service_type(self, container_name: str, deployment_name: str) -> Optional[str]:
+        """
+        Extract service type from container name
+
+        Args:
+            container_name: Full container name
+            deployment_name: Deployment name
+
+        Returns:
+            Service type string or None
+        """
+        # Remove 'honeymesh-' prefix and deployment suffix
+        name_lower = container_name.lower()
+
+        if deployment_name == 'default':
+            # Pattern: honeymesh-<service>
+            if 'elasticsearch' in name_lower:
+                return 'elasticsearch'
+            elif 'kibana' in name_lower:
+                return 'kibana'
+            elif 'logstash' in name_lower:
+                return 'logstash'
+            elif 'filebeat' in name_lower:
+                return 'filebeat'
+            elif 'cowrie' in name_lower:
+                return 'cowrie'
+        else:
+            # Pattern: honeymesh-<service>-<deployment> or honeymesh-<deployment>
+            # For medium interaction, the cowrie container is: honeymesh-<deployment>
+            if f'honeymesh-{deployment_name}' == name_lower and 'elasticsearch' not in name_lower and 'kibana' not in name_lower:
+                return 'cowrie'
+            elif 'elasticsearch' in name_lower:
+                return 'elasticsearch'
+            elif 'kibana' in name_lower:
+                return 'kibana'
+            elif 'logstash' in name_lower:
+                return 'logstash'
+            elif 'filebeat' in name_lower:
+                return 'filebeat'
+
+        return None
 
     def check_container_health(self, container) -> str:
         """Check if a container is healthy"""
@@ -1541,11 +1637,29 @@ services:
         finally:
             os.chdir(original_dir)
 
-    def restart_services(self) -> bool:
-        """Restart all services"""
+    def restart_services(self, deployment_name: str = 'default') -> bool:
+        """
+        Restart all services for a deployment
+
+        Args:
+            deployment_name: Name of deployment to restart
+
+        Returns:
+            True if successful, False otherwise
+        """
         try:
             original_dir = os.getcwd()
-            os.chdir(self.data_dir)
+
+            # Determine deployment directory
+            if deployment_name == 'default':
+                deploy_dir = self.data_dir
+            else:
+                deploy_dir = Path("./honeypot-data/medium") / deployment_name
+
+            if not deploy_dir.exists():
+                raise Exception(f"Deployment directory not found: {deploy_dir}")
+
+            os.chdir(deploy_dir)
 
             self.print_status("Restarting services...", "info")
 
@@ -1561,7 +1675,6 @@ services:
             if result.returncode != 0:
                 raise Exception(f"Failed to restart services: {result.stderr}")
 
-            self.wait_for_services_healthy()
             self.print_status("Services restarted successfully", "success")
             return True
 
@@ -1571,11 +1684,30 @@ services:
         finally:
             os.chdir(original_dir)
 
-    def remove_deployment(self) -> bool:
-        """Remove deployment containers and networks"""
+    def remove_deployment(self, deployment_name: str = 'default') -> bool:
+        """
+        Remove deployment containers and networks
+
+        Args:
+            deployment_name: Name of deployment to remove
+
+        Returns:
+            True if successful, False otherwise
+        """
         try:
             original_dir = os.getcwd()
-            os.chdir(self.data_dir)
+
+            # Determine deployment directory
+            if deployment_name == 'default':
+                deploy_dir = self.data_dir
+            else:
+                deploy_dir = Path("./honeypot-data/medium") / deployment_name
+
+            if not deploy_dir.exists():
+                self.print_status(f"Deployment directory not found: {deploy_dir}", "warning")
+                return True  # Consider it removed if directory doesn't exist
+
+            os.chdir(deploy_dir)
 
             self.print_status("Removing deployment...", "info")
 
@@ -1684,8 +1816,34 @@ services:
         else:
             self.quit_application()
 
-    def management_console(self):
-        """Display the management console"""
+    def management_console(self, selected_deployment: str = None):
+        """
+        Display the management console
+
+        Args:
+            selected_deployment: Name of deployment to manage (None = auto-select)
+        """
+        # Detect all deployments
+        all_deployments = self.get_all_honeymesh_deployments()
+
+        if not all_deployments:
+            self.print_status("No HoneyMesh deployments found", "warning")
+            self.wait_for_input()
+            return
+
+        # If no deployment selected and multiple exist, show selector
+        if not selected_deployment and len(all_deployments) > 1:
+            selected_deployment = self.select_deployment(all_deployments)
+            if not selected_deployment:
+                return
+
+        # If still no deployment selected, use first available
+        if not selected_deployment:
+            selected_deployment = list(all_deployments.keys())[0]
+
+        # Store current deployment
+        self.current_deployment = selected_deployment
+
         while True:
             self.clear_screen()
 
@@ -1698,15 +1856,23 @@ services:
                     pass
 
             print(f"{Colors.BOLD}HoneyMesh Management Console{Colors.END}\n")
-            print(f"Deployment: {self.data_dir}")
+
+            # Show deployment info
+            deployment_type = "Default" if selected_deployment == 'default' else "Medium Interaction"
+            print(f"Deployment: {Colors.CYAN}{selected_deployment}{Colors.END} ({deployment_type})")
 
             # Show real uptime if possible
             try:
-                status = self.get_container_status()
+                status = self.get_container_status(selected_deployment)
                 running_containers = sum(1 for s in status.values() if s['status'] == 'running')
-                print(f"Running Services: {running_containers}/{len(self.services)}")
+                total_containers = len(status)
+                print(f"Running Services: {running_containers}/{total_containers}")
             except:
                 print("Status: Checking...")
+
+            # Show option to switch deployment if multiple exist
+            if len(all_deployments) > 1:
+                print(f"{Colors.YELLOW}[W]{Colors.END} Switch to different deployment")
 
             print("─" * 40)
 
@@ -1718,59 +1884,126 @@ services:
             print(f"{Colors.RED}[D]{Colors.END} Stop & remove deployment")
             print(f"{Colors.WHITE}[E]{Colors.END} Exit to main menu")
 
-            choice = self.get_user_choice("\nEnter your choice: ", ['S', 'L', 'R', 'C', 'B', 'D', 'E'])
+            valid_choices = ['S', 'L', 'R', 'C', 'B', 'D', 'E']
+            if len(all_deployments) > 1:
+                valid_choices.append('W')
+
+            choice = self.get_user_choice("\nEnter your choice: ", valid_choices)
 
             if choice == 's':
-                self.show_service_status()
+                self.show_service_status(selected_deployment)
             elif choice == 'l':
-                self.show_live_logs()
+                self.show_live_logs(selected_deployment)
             elif choice == 'r':
-                self.restart_services_interactive()
+                self.restart_services_interactive(selected_deployment)
             elif choice == 'c':
                 self.change_configuration()
             elif choice == 'b':
                 self.backup_deployment()
             elif choice == 'd':
-                if self.stop_and_remove_deployment():
+                if self.stop_and_remove_deployment(selected_deployment):
                     break
+            elif choice == 'w' and len(all_deployments) > 1:
+                # Switch deployment
+                new_deployment = self.select_deployment(all_deployments)
+                if new_deployment:
+                    selected_deployment = new_deployment
+                    self.current_deployment = selected_deployment
             elif choice == 'e':
                 self.show_main_menu()
                 break
 
-    def show_service_status(self):
-        """Show detailed service status"""
+    def select_deployment(self, deployments: Dict[str, List]) -> Optional[str]:
+        """
+        Show deployment selector menu
+
+        Args:
+            deployments: Dict of deployment names to container lists
+
+        Returns:
+            Selected deployment name or None
+        """
         self.clear_screen()
-        print(f"{Colors.BOLD}Service Status & Health Details{Colors.END}\n")
+        print(f"{Colors.BOLD}Select Deployment to Manage{Colors.END}\n")
+        print("─" * 70)
+        print(f"{'#':<4} {'Name':<30} {'Type':<20} {'Containers':<10}")
+        print("─" * 70)
+
+        deployment_list = list(deployments.keys())
+
+        for idx, deployment_name in enumerate(deployment_list, 1):
+            deployment_type = "Default" if deployment_name == 'default' else "Medium Interaction"
+            container_count = len(deployments[deployment_name])
+            running_count = sum(1 for c in deployments[deployment_name] if c.status == 'running')
+
+            print(f"{idx:<4} {deployment_name:<30} {deployment_type:<20} {running_count}/{container_count}")
+
+        print("─" * 70)
+        print(f"{Colors.WHITE}[C]{Colors.END} Cancel")
+
+        valid_choices = [str(i) for i in range(1, len(deployment_list) + 1)] + ['C']
+        choice = self.get_user_choice("\nSelect deployment number: ", valid_choices)
+
+        if choice == 'c':
+            return None
+
+        return deployment_list[int(choice) - 1]
+
+    def show_service_status(self, deployment_name: str = 'default'):
+        """
+        Show detailed service status
+
+        Args:
+            deployment_name: Name of deployment to show status for
+        """
+        self.clear_screen()
+        print(f"{Colors.BOLD}Service Status & Health Details{Colors.END}")
+        print(f"Deployment: {deployment_name}\n")
 
         try:
-            status = self.get_container_status()
+            status = self.get_container_status(deployment_name)
 
-            for service, info in status.items():
-                service_name = service.replace('_', ' ').title()
-                print(f"{Colors.BOLD}{service_name}:{Colors.END}")
-                print(f"  Container: {info['name']}")
-                print(f"  Status: {Colors.GREEN if info['status'] == 'running' else Colors.RED}{info['status']}{Colors.END}")
-                print(f"  Health: {Colors.GREEN if info['health'] == 'healthy' else Colors.YELLOW}{info['health']}{Colors.END}")
+            if not status:
+                self.print_status("No containers found for this deployment", "warning")
+            else:
+                for service, info in status.items():
+                    service_name = service.replace('_', ' ').title()
+                    print(f"{Colors.BOLD}{service_name}:{Colors.END}")
+                    print(f"  Container: {info['name']}")
+                    print(f"  Status: {Colors.GREEN if info['status'] == 'running' else Colors.RED}{info['status']}{Colors.END}")
+                    print(f"  Health: {Colors.GREEN if info['health'] == 'healthy' else Colors.YELLOW}{info['health']}{Colors.END}")
 
-                if info['ports']:
-                    print(f"  Ports: {', '.join([f'{k}→{v}' for k, v in info['ports'].items()])}")
-                else:
-                    print(f"  Ports: Internal only")
-                print()
+                    if info['ports']:
+                        print(f"  Ports: {', '.join([f'{k}→{v}' for k, v in info['ports'].items()])}")
+                    else:
+                        print(f"  Ports: Internal only")
+                    print()
 
         except Exception as e:
             self.print_status(f"Error getting service status: {str(e)}", "error")
 
         self.wait_for_input()
 
-    def show_live_logs(self):
-        """Show live log monitoring"""
+    def show_live_logs(self, deployment_name: str = 'default'):
+        """
+        Show live log monitoring
+
+        Args:
+            deployment_name: Name of deployment to show logs for
+        """
         self.clear_screen()
-        print(f"{Colors.BOLD}Live Log Monitoring{Colors.END}\n")
+        print(f"{Colors.BOLD}Live Log Monitoring{Colors.END}")
+        print(f"Deployment: {deployment_name}\n")
         print("Showing recent Cowrie activity (Press Ctrl+C to return):\n")
 
         try:
-            log_file = self.data_dir / "logs" / "cowrie.json"
+            # Find log file based on deployment type
+            if deployment_name == 'default':
+                log_file = self.data_dir / "logs" / "cowrie.json"
+            else:
+                # Medium interaction deployment
+                log_file = Path("./honeypot-data/medium") / deployment_name / "log" / "cowrie.json"
+
             if log_file.exists():
                 # Show last 20 lines
                 with open(log_file, 'r') as f:
@@ -1790,22 +2023,29 @@ services:
                 print(f"\n{Colors.GREEN}Real-time monitoring would show new entries here...{Colors.END}")
             else:
                 print(f"{Colors.YELLOW}No log file found yet. Honeypot may still be starting up.{Colors.END}")
+                print(f"Expected location: {log_file}")
 
         except Exception as e:
             self.print_status(f"Error reading logs: {str(e)}", "error")
 
         self.wait_for_input("Press Enter to return to management console...")
 
-    def restart_services_interactive(self):
-        """Restart services with user feedback"""
+    def restart_services_interactive(self, deployment_name: str = 'default'):
+        """
+        Restart services with user feedback
+
+        Args:
+            deployment_name: Name of deployment to restart
+        """
         self.clear_screen()
-        print(f"{Colors.BOLD}Restart Services{Colors.END}\n")
+        print(f"{Colors.BOLD}Restart Services{Colors.END}")
+        print(f"Deployment: {deployment_name}\n")
         print("This will restart all HoneyMesh services. Any active connections will be dropped.")
 
         confirm = self.get_yes_no_input("Continue with restart", False)
 
         if confirm:
-            if self.restart_services():
+            if self.restart_services(deployment_name):
                 self.print_status("All services restarted successfully", "success")
             else:
                 self.print_status("Some services may have failed to restart", "warning")
@@ -1869,17 +2109,26 @@ services:
 
         self.wait_for_input()
 
-    def stop_and_remove_deployment(self) -> bool:
-        """Stop and remove the deployment"""
+    def stop_and_remove_deployment(self, deployment_name: str = 'default') -> bool:
+        """
+        Stop and remove the deployment
+
+        Args:
+            deployment_name: Name of deployment to remove
+
+        Returns:
+            True if successful, False otherwise
+        """
         self.clear_screen()
-        print(f"{Colors.RED}{Colors.BOLD}Stop & Remove Deployment{Colors.END}\n")
+        print(f"{Colors.RED}{Colors.BOLD}Stop & Remove Deployment{Colors.END}")
+        print(f"Deployment: {deployment_name}\n")
         print("This will stop all honeypot services and remove containers.")
         print(f"{Colors.YELLOW}WARNING: Containers will be removed but log data will be preserved.{Colors.END}")
 
         confirm = self.get_yes_no_input("Are you sure you want to continue", False)
 
         if confirm:
-            if self.remove_deployment():
+            if self.remove_deployment(deployment_name):
                 self.print_status("Deployment stopped and removed successfully", "success")
                 self.wait_for_input("Press Enter to return to main menu...")
                 self.show_main_menu()
