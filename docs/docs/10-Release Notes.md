@@ -1,4 +1,4 @@
-# HoneyMesh v1.0.0 - Initial Alpha Release
+# HoneyMesh v1.0.0 Release
 
 **Release Date:** November 14, 2025
 **Status:** Alpha Release
@@ -261,20 +261,11 @@ The creators and contributors of HoneyMesh are **not responsible** for any misus
 ## Roadmap
 
 ### Planned for v1.1.0
-- Web-based management interface
-- Real-time log streaming
-- Enhanced configuration editor
 - Template validation and testing
-- Multi-user support with authentication
-- API for programmatic access
-
-### Planned for v2.0.0
-- High interaction honeypot support
-- Distributed deployment management
-- Threat intelligence integration
-- Automated response capabilities
-- Enhanced analytics and reporting
-- Machine learning-based attack analysis
+- Centralized cluster manager for multiple honeypots
+- Elastic pipeline improvements
+- General bug fixes
+- Default high interaction mode
 
 ---
 
@@ -330,4 +321,5 @@ Please refer to the LICENSE file in the repository for licensing information.
 **Thank you for trying HoneyMesh v1.0.0!**
 
 We look forward to your feedback and contributions as we continue to develop and improve this platform for the security research community.
+
 
