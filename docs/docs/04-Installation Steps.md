@@ -18,6 +18,7 @@ git clone https://github.com/rayzax/HoneyMesh.git
   <pre><code className="language-bash">
 cd HoneyMesh/
 ls
+sudo chmod +x installDependencies.sh
 sudo ./installDependencies.sh
   </code></pre>
 
@@ -28,7 +29,7 @@ sudo ./installDependencies.sh
 
   <h3>4. Run HoneyMesh</h3>
   <pre><code className="language-bash">
-sudo python3 HoneyMesh.py
+sudo python3 honeymesh.py
   </code></pre>
 
   <h3>5. Recommended Mode</h3>
@@ -96,3 +97,4 @@ http://localhost:5601
 tail -f ./honeypot-data/logs/cowrie.json
   </code></pre>
 </section>
+
