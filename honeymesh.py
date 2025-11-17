@@ -247,10 +247,15 @@ The authors are not responsible for misuse or any damages caused by this softwar
     def get_user_choice(self, prompt: str, valid_choices: List[str]) -> str:
         """Get user choice with validation"""
         while True:
-            choice = input(f"{Colors.WHITE}{prompt}{Colors.END}").strip().lower()
-            if choice in [c.lower() for c in valid_choices]:
-                return choice
-            print(f"{Colors.RED}Invalid choice. Please select from: {', '.join(valid_choices)}{Colors.END}")
+            try:
+                choice = input(f"{Colors.WHITE}{prompt}{Colors.END}").strip().lower()
+                if choice in [c.lower() for c in valid_choices]:
+                    return choice
+                print(f"{Colors.RED}Invalid choice. Please select from: {', '.join(valid_choices)}{Colors.END}")
+            except KeyboardInterrupt:
+                raise
+            except Exception:
+                print(f"{Colors.RED}Invalid input, please try again{Colors.END}")
 
     def detect_existing_deployment(self) -> bool:
         """Check if there's an existing HoneyMesh deployment"""
@@ -480,7 +485,9 @@ The authors are not responsible for misuse or any damages caused by this softwar
             self.clear_screen()
             self.print_banner()
 
-            existing_deployment = self.detect_existing_deployment()
+            # Check for ANY HoneyMesh deployments (default or medium interaction)
+            all_deployments = self.get_all_honeymesh_deployments()
+            existing_deployment = len(all_deployments) > 0
 
             if existing_deployment:
                 print(f"{Colors.BOLD}Existing HoneyMesh deployment detected in {self.data_dir}{Colors.END}\n")
@@ -594,7 +601,22 @@ The authors are not responsible for misuse or any damages caused by this softwar
             config['telnet_port'] = None
 
         print(f"\n{Colors.BOLD}System Identity:{Colors.END}")
-        config['hostname'] = input(f"Hostname [ubuntu-server]: ").strip() or "ubuntu-server"
+        while True:
+            hostname_input = input(f"Hostname [ubuntu-server]: ").strip()
+            hostname = hostname_input if hostname_input else "ubuntu-server"
+
+            # Validate hostname
+            if not all(c.isalnum() or c in '.-_' for c in hostname):
+                print(f"{Colors.RED}Hostname can only contain letters, numbers, dots, hyphens, and underscores{Colors.END}")
+                continue
+
+            if len(hostname) > 253:
+                print(f"{Colors.RED}Hostname too long (max 253 characters){Colors.END}")
+                continue
+
+            config['hostname'] = hostname
+            break
+
         config['ssh_banner'] = input(f"SSH banner [SSH-2.0-OpenSSH_7.4]: ").strip() or "SSH-2.0-OpenSSH_7.4"
 
         print(f"\n{Colors.BOLD}Dashboard Access:{Colors.END}")
@@ -602,54 +624,100 @@ The authors are not responsible for misuse or any damages caused by this softwar
         config['external_access'] = self.get_yes_no_input("Allow external access (WARNING: Security risk)", False)
 
         print(f"\n{Colors.BOLD}Storage Settings:{Colors.END}")
-        config['data_directory'] = input(f"Data directory [./honeypot-data]: ").strip() or "./honeypot-data"
+        while True:
+            data_dir_input = input(f"Data directory [./honeypot-data]: ").strip()
+            data_dir = data_dir_input if data_dir_input else "./honeypot-data"
+
+            # Basic path validation
+            if any(c in data_dir for c in ['<', '>', '|', '\0']):
+                print(f"{Colors.RED}Invalid characters in path{Colors.END}")
+                continue
+
+            config['data_directory'] = data_dir
+            break
+
         config['log_retention_days'] = self.get_number_input("Log retention days", 30)
 
         return config
 
     def get_port_input(self, prompt: str, default: int) -> int:
         """Get port number from user with validation - checks for actual conflicts"""
+        suggested_port = default
+
+        # Find an available port starting from default
+        if not self.is_port_available(default):
+            for offset in range(1, 100):
+                candidate = default + offset
+                if 1 <= candidate <= 65535 and self.is_port_available(candidate):
+                    suggested_port = candidate
+                    break
+
         while True:
             try:
-                port_str = input(f"{prompt} [{default}]: ").strip()
+                # Show suggestion if different from default
+                if suggested_port != default:
+                    display_prompt = f"{prompt} [suggested: {suggested_port}, default was {default}]"
+                else:
+                    display_prompt = f"{prompt} [{default}]"
+
+                port_str = input(f"{display_prompt}: ").strip()
+
+                # Use suggested port if user presses enter
                 if not port_str:
-                    port = default
+                    port = suggested_port
                 else:
                     port = int(port_str)
-            
+
                 # Validate port range (OS limitation)
                 if not (1 <= port <= 65535):
                     print(f"{Colors.RED}Port must be between 1 and 65535{Colors.END}")
                     continue
-            
-                    # Check if port is already in use
+
+                # Check if port is already in use
                 if not self.is_port_available(port):
                     print(f"{Colors.RED}Port {port} is already in use{Colors.END}")
-                    print(f"{Colors.YELLOW}Choose a different port or stop the service using it{Colors.END}")
+                    # Find next available port
+                    for offset in range(1, 100):
+                        candidate = port + offset
+                        if 1 <= candidate <= 65535 and self.is_port_available(candidate):
+                            suggested_port = candidate
+                            print(f"{Colors.YELLOW}Suggestion: Try port {suggested_port} (press Enter to use it){Colors.END}")
+                            break
+                    else:
+                        print(f"{Colors.YELLOW}Choose a different port or stop the service using it{Colors.END}")
                     continue
-            
-                    # Port is valid and available
+
+                # Port is valid and available
                 if port < 1024:
                     print(f"{Colors.YELLOW}Note: Port {port} is privileged (Docker will handle this){Colors.END}")
-            
+
                 return port
-            
+
             except ValueError:
                 print(f"{Colors.RED}Please enter a valid port number{Colors.END}")
+            except KeyboardInterrupt:
+                raise
+            except Exception as e:
+                print(f"{Colors.RED}Invalid input: {str(e)}{Colors.END}")
 
     def get_yes_no_input(self, prompt: str, default: bool) -> bool:
         """Get yes/no input from user"""
         default_str = "Y/n" if default else "y/N"
         while True:
-            choice = input(f"{prompt} [{default_str}]: ").strip().lower()
-            if not choice:
-                return default
-            if choice in ['y', 'yes']:
-                return True
-            elif choice in ['n', 'no']:
-                return False
-            else:
-                print(f"{Colors.RED}Please enter 'y' or 'n'{Colors.END}")
+            try:
+                choice = input(f"{prompt} [{default_str}]: ").strip().lower()
+                if not choice:
+                    return default
+                if choice in ['y', 'yes']:
+                    return True
+                elif choice in ['n', 'no']:
+                    return False
+                else:
+                    print(f"{Colors.RED}Please enter 'y' or 'n'{Colors.END}")
+            except KeyboardInterrupt:
+                raise
+            except Exception:
+                print(f"{Colors.RED}Invalid input, please try again{Colors.END}")
 
     def get_number_input(self, prompt: str, default: int) -> int:
         """Get number input from user with validation"""
@@ -658,9 +726,17 @@ The authors are not responsible for misuse or any damages caused by this softwar
                 number_str = input(f"{prompt} [{default}]: ").strip()
                 if not number_str:
                     return default
-                return int(number_str)
+                num = int(number_str)
+                if num < 0:
+                    print(f"{Colors.RED}Please enter a positive number{Colors.END}")
+                    continue
+                return num
             except ValueError:
                 print(f"{Colors.RED}Please enter a valid number{Colors.END}")
+            except KeyboardInterrupt:
+                raise
+            except Exception:
+                print(f"{Colors.RED}Invalid input, please try again{Colors.END}")
 
     def show_deployment_summary(self, config: Dict) -> bool:
         """Show deployment summary and get confirmation"""
