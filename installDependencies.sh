@@ -402,8 +402,6 @@ print_next_steps() {
     echo -e "• Test Docker access: ${CYAN}docker run hello-world${NC}"
     echo -e "• View Docker info: ${CYAN}docker info${NC}\n"
 
-    echo -e "${RED}${BOLD}SECURITY REMINDER:${NC}"
-    echo -e "${RED}Never run HoneyMesh as root! Always run as user '${ACTUAL_USER}'${NC}\n"
 }
 
 # Main installation flow
