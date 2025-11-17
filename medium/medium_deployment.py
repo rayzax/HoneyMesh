@@ -325,17 +325,34 @@ class MediumDeploymentManager:
         print("Examples: epic-prod-01, corp-server-02, finance-web-01")
         print()
 
-        while True:
-            name = input("Deployment name: ").strip()
+        # Generate a default name based on template
+        template_id = config.get('template_id', 'honeypot')
+        counter = 1
+        default_name = f"{template_id}-{counter:02d}"
 
+        # Find next available default name
+        while (self.medium_data_dir / default_name).exists() and counter < 100:
+            counter += 1
+            default_name = f"{template_id}-{counter:02d}"
+
+        while True:
+            name = input(f"Deployment name [{default_name}]: ").strip()
+
+            # Use default if empty
             if not name:
-                print(f"{Colors.RED}Name cannot be empty{Colors.END}")
-                continue
+                name = default_name
 
             # Check if deployment already exists
             deployment_dir = self.medium_data_dir / name
             if deployment_dir.exists():
                 print(f"{Colors.RED}Deployment '{name}' already exists{Colors.END}")
+                # Suggest alternative
+                alt_counter = counter + 1
+                alt_name = f"{template_id}-{alt_counter:02d}"
+                while (self.medium_data_dir / alt_name).exists() and alt_counter < 100:
+                    alt_counter += 1
+                    alt_name = f"{template_id}-{alt_counter:02d}"
+                print(f"{Colors.YELLOW}Suggestion: Try '{alt_name}'{Colors.END}")
                 continue
 
             # Validate name format
@@ -355,13 +372,28 @@ class MediumDeploymentManager:
         print(f"Current: {config['hostname']}")
         print()
 
-        hostname = input(f"New hostname [{config['hostname']}]: ").strip()
-        if hostname:
+        while True:
+            hostname = input(f"New hostname [{config['hostname']}]: ").strip()
+
+            # Use current hostname if empty
+            if not hostname:
+                self.app.print_status("Hostname unchanged", "info")
+                time.sleep(1)
+                break
+
+            # Basic hostname validation
+            if not all(c.isalnum() or c in '.-_' for c in hostname):
+                print(f"{Colors.RED}Hostname can only contain letters, numbers, dots, hyphens, and underscores{Colors.END}")
+                continue
+
+            if len(hostname) > 253:
+                print(f"{Colors.RED}Hostname too long (max 253 characters){Colors.END}")
+                continue
+
             config['hostname'] = hostname
             self.app.print_status("Hostname updated", "success")
-        else:
-            self.app.print_status("Hostname unchanged", "info")
-        time.sleep(1)
+            time.sleep(1)
+            break
 
     def configure_users(self, config: Dict):
         """Configure user accounts"""
@@ -400,13 +432,28 @@ class MediumDeploymentManager:
         """Add new user account"""
         print(f"\n{Colors.BOLD}Add New User{Colors.END}\n")
 
-        username = input("Username: ").strip()
-        if not username:
-            return
+        while True:
+            username = input("Username: ").strip()
+            if not username:
+                print(f"{Colors.YELLOW}Cancelled{Colors.END}")
+                time.sleep(1)
+                return
 
-        password = input("Password: ").strip()
+            # Validate username
+            if not all(c.isalnum() or c in '_-' for c in username):
+                print(f"{Colors.RED}Username can only contain letters, numbers, hyphens, and underscores{Colors.END}")
+                continue
+
+            # Check for duplicate
+            if any(u['username'] == username for u in config['users']):
+                print(f"{Colors.RED}User '{username}' already exists{Colors.END}")
+                continue
+
+            break
+
+        password = input("Password [password123]: ").strip()
         if not password:
-            return
+            password = "password123"
 
         config['users'].append({
             'username': username,

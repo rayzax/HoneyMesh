@@ -53,11 +53,16 @@ class TemplateBuilder:
     
     def get_input(self, prompt: str, default: str = "") -> str:
         """Get user input with optional default"""
-        if default:
-            user_input = input(f"{Colors.WHITE}{prompt} [{Colors.GREEN}{default}{Colors.END}{Colors.WHITE}]: {Colors.END}").strip()
-            return user_input if user_input else default
-        else:
-            return input(f"{Colors.WHITE}{prompt}: {Colors.END}").strip()
+        try:
+            if default:
+                user_input = input(f"{Colors.WHITE}{prompt} [{Colors.GREEN}{default}{Colors.END}{Colors.WHITE}]: {Colors.END}").strip()
+                return user_input if user_input else default
+            else:
+                return input(f"{Colors.WHITE}{prompt}: {Colors.END}").strip()
+        except KeyboardInterrupt:
+            raise
+        except Exception:
+            return default if default else ""
     
     def get_yes_no(self, prompt: str, default: bool = True) -> bool:
         """Get yes/no input"""
@@ -88,22 +93,30 @@ class TemplateBuilder:
         """Display list and get user selection"""
         if not items:
             return None
-        
+
         for i, item in enumerate(items, 1):
             print(f"  {Colors.GREEN}[{i}]{Colors.END} {item}")
-        
+
         print(f"  {Colors.YELLOW}[0]{Colors.END} Cancel")
-        
+
         while True:
             try:
-                choice = int(input(f"\n{Colors.WHITE}{prompt}: {Colors.END}").strip())
+                choice_str = input(f"\n{Colors.WHITE}{prompt}: {Colors.END}").strip()
+                if not choice_str:
+                    print(f"{Colors.YELLOW}No selection made{Colors.END}")
+                    continue
+                choice = int(choice_str)
                 if choice == 0:
                     return None
                 if 1 <= choice <= len(items):
                     return items[choice - 1]
-                print(f"{Colors.RED}Invalid selection{Colors.END}")
+                print(f"{Colors.RED}Invalid selection (must be 0-{len(items)}){Colors.END}")
             except ValueError:
                 print(f"{Colors.RED}Please enter a number{Colors.END}")
+            except KeyboardInterrupt:
+                raise
+            except Exception as e:
+                print(f"{Colors.RED}Invalid input: {str(e)}{Colors.END}")
     
     def run(self):
         """Main template builder flow"""
@@ -220,13 +233,27 @@ class TemplateBuilder:
     def add_simple_user(self, uid: int):
         """Add user with basic configuration"""
         print(f"\n{Colors.CYAN}Add User (Simple Mode){Colors.END}")
-        username = self.get_input("Username")
-        if not username:
-            return
-        
+
+        while True:
+            username = self.get_input("Username")
+            if not username:
+                return
+
+            # Validate username
+            if not all(c.isalnum() or c in '_-' for c in username):
+                print(f"{Colors.RED}Username can only contain letters, numbers, hyphens, and underscores{Colors.END}")
+                continue
+
+            # Check for duplicate
+            if username in self.template['users']:
+                print(f"{Colors.RED}User '{username}' already exists{Colors.END}")
+                continue
+
+            break
+
         password = self.get_input("Password", "password123")
         gecos = self.get_input("Full name/description", username)
-        
+
         self.template['users'][username] = {
             'password': password,
             'uid': uid,
@@ -235,32 +262,67 @@ class TemplateBuilder:
             'shell': '/bin/bash',
             'gecos': gecos
         }
-        
+
         print(f"{Colors.GREEN}✓ User '{username}' added{Colors.END}")
     
     def add_advanced_user(self, uid: int):
         """Add user with advanced configuration"""
         print(f"\n{Colors.CYAN}Add User (Advanced Mode){Colors.END}")
-        username = self.get_input("Username")
-        if not username:
-            return
-        
+
+        while True:
+            username = self.get_input("Username")
+            if not username:
+                return
+
+            # Validate username
+            if not all(c.isalnum() or c in '_-' for c in username):
+                print(f"{Colors.RED}Username can only contain letters, numbers, hyphens, and underscores{Colors.END}")
+                continue
+
+            # Check for duplicate
+            if username in self.template['users']:
+                print(f"{Colors.RED}User '{username}' already exists{Colors.END}")
+                continue
+
+            break
+
         password = self.get_input("Password", "password123")
-        uid_input = self.get_input("UID", str(uid))
-        gid_input = self.get_input("GID", uid_input)
+
+        while True:
+            uid_input = self.get_input("UID", str(uid))
+            try:
+                uid_val = int(uid_input)
+                if uid_val < 0 or uid_val > 65535:
+                    print(f"{Colors.RED}UID must be between 0 and 65535{Colors.END}")
+                    continue
+                break
+            except ValueError:
+                print(f"{Colors.RED}UID must be a number{Colors.END}")
+
+        while True:
+            gid_input = self.get_input("GID", uid_input)
+            try:
+                gid_val = int(gid_input)
+                if gid_val < 0 or gid_val > 65535:
+                    print(f"{Colors.RED}GID must be between 0 and 65535{Colors.END}")
+                    continue
+                break
+            except ValueError:
+                print(f"{Colors.RED}GID must be a number{Colors.END}")
+
         home = self.get_input("Home directory", f"/home/{username}")
         shell = self.get_input("Shell", "/bin/bash")
         gecos = self.get_input("GECOS (full name)", username)
-        
+
         self.template['users'][username] = {
             'password': password,
-            'uid': int(uid_input),
-            'gid': int(gid_input),
+            'uid': uid_val,
+            'gid': gid_val,
             'home': home,
             'shell': shell,
             'gecos': gecos
         }
-        
+
         print(f"{Colors.GREEN}✓ User '{username}' added{Colors.END}")
     
     def remove_user(self):
