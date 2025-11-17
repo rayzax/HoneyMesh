@@ -6,13 +6,6 @@
 git clone https://github.com/rayzax/HoneyMesh.git
   </code></pre>
 
-  <div style={{ textAlign: 'center', margin: '1rem 0' }}>
-    <img
-      src="/img/Clonerepo.jpg.png"
-      alt="Cloning the HoneyMesh repository"
-      style={{ maxWidth: '100%', borderRadius: '6px' }}
-    />
-  </div>
 
   <h3>2. Run the Dependency Checker</h3>
   <pre><code className="language-bash">
@@ -98,5 +91,6 @@ http://localhost:5601
 tail -f ./honeypot-data/logs/cowrie.json
   </code></pre>
 </section>
+
 
 
