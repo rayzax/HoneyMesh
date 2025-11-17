@@ -2,7 +2,7 @@
   <h1><strong>Welcome to HoneyMesh</strong></h1>
 
   <p>
-    HoneyMesh is a <strong>self-hosted honeypot deployment platform</strong> inspired by <strong>T-Pot</strong>, designed for:
+    HoneyMesh is a <strong>self-hosted honeypot deployment platform</strong> designed for:
   </p>
 
   <ul class="welcome-list">
@@ -35,6 +35,7 @@
     ELK stack for logging and analysis &nbsp;|&nbsp; Python CLI for management
   </p>
 </section>
+
 
 
 
