@@ -2,7 +2,7 @@
   <h2><strong>Overview of HoneyMesh</strong></h2>
 
   <p>
-    HoneyMesh is inspired by <strong>T-Pot</strong> and designed for 
+    HoneyMesh is designed for 
     <strong>security professionals</strong>, <strong>researchers</strong>, 
     and <strong>educational institutions</strong>.
   </p>
@@ -48,6 +48,7 @@
     <li><strong>Python CLI</strong> for management</li>
   </ul>
 </section>
+
 
 
 
