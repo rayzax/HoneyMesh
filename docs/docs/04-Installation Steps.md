@@ -25,6 +25,7 @@ sudo ./installDependencies.sh
   <h3>3. Follow the Next Steps</h3>
   <p>
     After dependencies are installed, proceed with deployment using the main HoneyMesh script.
+    You will need to reboot or log out in order for the changes to take effect
   </p>
 
   <h3>4. Run HoneyMesh</h3>
@@ -97,4 +98,5 @@ http://localhost:5601
 tail -f ./honeypot-data/logs/cowrie.json
   </code></pre>
 </section>
+
 
