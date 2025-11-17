@@ -31,7 +31,8 @@ Port 2222
 Save the file and restart the SSH service:
 
 ```bash
-sudo systemctl restart sshd
+sudo systemctl daemon-reload
+sudo systemctl restart ssh.socket
 ```
 
 ## Step 3: Configure Cloud Firewall
@@ -53,12 +54,12 @@ Configure a cloud firewall for your VM with the following rules:
 ### Example Rule Configuration
 
 ```
-Rule 1: SSH Access
+Rule 1: SSH (Honeypot) Access
 - Port: 22
 - Protocol: TCP
 - Source: 0.0.0.0/0 (All)
 
-Rule 2: SSH Honeypot
+Rule 2: SSH Admin (your access)
 - Port: 2222
 - Protocol: TCP
 - Source: your.static.ip.address/32
