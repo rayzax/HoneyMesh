@@ -18,7 +18,7 @@ const FeatureList = [
   },
   {
     title: 'Focus on Threat Intelligence',
-    img: require('@site/static/img/HoneyMesh_Laptop.png').default,
+    img: require('@site/static/img/Threat_Intelligence.png').default,
     description: (
       <>
        HoneyMesh lets you focus on capturing and analyzing attacker behavior while
@@ -30,7 +30,7 @@ const FeatureList = [
   },
   {
     title: 'Powered by Elastic and Python',
-    img: require('@site/static/img/HoneyMesh_Workstation2.png').default,
+    img: require('@site/static/img/Powered.png').default,
     description: (
       <>
         Built with Python and the Elastic Stack, HoneyMesh offers a flexible, modern
