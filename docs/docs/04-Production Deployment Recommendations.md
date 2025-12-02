@@ -45,8 +45,8 @@ Configure a cloud firewall for your VM with the following rules:
 
 ### Firewall Rules
 
-1. **Allow inbound SSH (port 22)**: All sources
-2. **Allow inbound SSH Honeypot (port 2222)**: Your static IP only
+1. **Allow inbound honeypot SSH (port 22)**: All sources
+2. **Allow inbound admin SSH (port 2222)**: Your static IP only - this is your ssh port for managing the actual VPS
 3. **Allow inbound Kibana (port 5601)**: Your static IP only
 4. **Allow inbound Elasticsearch (port 9200)**: Your static IP only
 5. **Allow inbound Logstash (port 9600)**: Your static IP only
