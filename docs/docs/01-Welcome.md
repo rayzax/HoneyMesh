@@ -31,10 +31,6 @@
     <a class="welcome-button" href="https://honeymesh.readthedocs.io/en/latest/docs/Production%20Deployment%20Recommendations">Get Started →</a>
   </p>
 
-  <p class="feature-tags">
-    ELK stack for logging and analysis &nbsp;|&nbsp; Python CLI for management
-  </p>
-</section>
 
 
 
