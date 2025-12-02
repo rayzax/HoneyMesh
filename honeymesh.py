@@ -2062,7 +2062,7 @@ services:
 
     def show_live_logs(self, deployment_name: str = 'default'):
         """
-        Show live log monitoring
+        Show live log monitoring with real-time streaming
 
         Args:
             deployment_name: Name of deployment to show logs for
@@ -2070,7 +2070,7 @@ services:
         self.clear_screen()
         print(f"{Colors.BOLD}Live Log Monitoring{Colors.END}")
         print(f"Deployment: {deployment_name}\n")
-        print("Showing recent Cowrie activity (Press Ctrl+C to return):\n")
+        print("Showing recent Cowrie activity (Press Ctrl+C to stop):\n")
 
         try:
             # Find log file based on deployment type
@@ -2080,31 +2080,143 @@ services:
                 # Medium interaction deployment
                 log_file = Path("./honeypot-data/medium") / deployment_name / "log" / "cowrie.json"
 
-            if log_file.exists():
-                # Show last 20 lines
-                with open(log_file, 'r') as f:
-                    lines = f.readlines()
-                    recent_lines = lines[-20:] if len(lines) > 20 else lines
-
-                for line in recent_lines:
-                    try:
-                        log_entry = json.loads(line.strip())
-                        timestamp = log_entry.get('timestamp', 'N/A')
-                        src_ip = log_entry.get('src_ip', 'N/A')
-                        message = log_entry.get('message', 'N/A')
-                        print(f"{Colors.CYAN}{timestamp}{Colors.END} {Colors.YELLOW}{src_ip}{Colors.END} {message}")
-                    except:
-                        print(line.strip())
-
-                print(f"\n{Colors.GREEN}Real-time monitoring would show new entries here...{Colors.END}")
-            else:
+            if not log_file.exists():
                 print(f"{Colors.YELLOW}No log file found yet. Honeypot may still be starting up.{Colors.END}")
                 print(f"Expected location: {log_file}")
+                self.wait_for_input("\nPress Enter to return to management console...")
+                return
+
+            # Show last 20 lines of history
+            print(f"{Colors.BOLD}--- Recent History ---{Colors.END}\n")
+            with open(log_file, 'r') as f:
+                lines = f.readlines()
+                recent_lines = lines[-20:] if len(lines) > 20 else lines
+
+            for line in recent_lines:
+                self._format_and_print_log(line)
+
+            print(f"\n{Colors.BOLD}--- Live Stream (watching for new entries) ---{Colors.END}\n")
+
+            # Start real-time tailing
+            stop_event = threading.Event()
+
+            def tail_log_file():
+                """Tail the log file and print new lines"""
+                try:
+                    with open(log_file, 'r') as f:
+                        # Move to end of file
+                        f.seek(0, 2)
+
+                        while not stop_event.is_set():
+                            line = f.readline()
+                            if line:
+                                self._format_and_print_log(line)
+                            else:
+                                # No new data, wait a bit
+                                time.sleep(0.1)
+                except Exception as e:
+                    if not stop_event.is_set():
+                        print(f"\n{Colors.RED}Error reading log file: {str(e)}{Colors.END}")
+
+            # Start tailing thread
+            tail_thread = threading.Thread(target=tail_log_file, daemon=True)
+            tail_thread.start()
+
+            # Wait for Ctrl+C
+            try:
+                print(f"{Colors.BLUE}[Monitoring... Press Ctrl+C to return to menu]{Colors.END}\n")
+                while True:
+                    time.sleep(0.5)
+            except KeyboardInterrupt:
+                print(f"\n\n{Colors.GREEN}Stopping log monitoring...{Colors.END}")
+                stop_event.set()
+                tail_thread.join(timeout=1.0)
 
         except Exception as e:
             self.print_status(f"Error reading logs: {str(e)}", "error")
+            self.wait_for_input("\nPress Enter to return to management console...")
 
-        self.wait_for_input("Press Enter to return to management console...")
+    def _format_and_print_log(self, line: str):
+        """
+        Format and print a single log line with color coding based on event type
+
+        Args:
+            line: JSON log line to format and print
+        """
+        try:
+            log_entry = json.loads(line.strip())
+            timestamp = log_entry.get('timestamp', 'N/A')
+            src_ip = log_entry.get('src_ip', 'N/A')
+            message = log_entry.get('message', 'N/A')
+            eventid = log_entry.get('eventid', '')
+
+            # Extract additional relevant fields based on event type
+            extra_info = ""
+
+            # Color code based on event type
+            if 'login' in eventid:
+                username = log_entry.get('username', '')
+                password = log_entry.get('password', '')
+
+                if 'success' in eventid or 'login.success' in eventid:
+                    # Successful login - RED (security concern)
+                    color = Colors.RED
+                    if username and password:
+                        extra_info = f" [{username}:{password}]"
+                    elif username:
+                        extra_info = f" [{username}]"
+                else:
+                    # Failed login - YELLOW (attempted breach)
+                    color = Colors.YELLOW
+                    if username and password:
+                        extra_info = f" [{username}:{password}]"
+                    elif username:
+                        extra_info = f" [{username}]"
+
+            elif 'command' in eventid or 'input' in eventid:
+                # Command execution - MAGENTA (interesting activity)
+                color = Colors.MAGENTA
+                command_input = log_entry.get('input', '')
+                if command_input:
+                    extra_info = f" CMD: {command_input}"
+
+            elif 'session' in eventid:
+                if 'connect' in eventid or 'session.connect' in eventid:
+                    # New connection - GREEN (new activity)
+                    color = Colors.GREEN
+                elif 'closed' in eventid or 'session.closed' in eventid:
+                    # Connection closed - BLUE (session end)
+                    color = Colors.BLUE
+                    duration = log_entry.get('duration', '')
+                    if duration:
+                        extra_info = f" (duration: {duration}s)"
+                else:
+                    color = Colors.CYAN
+
+            elif 'download' in eventid or 'client.file' in eventid:
+                # File download/upload - RED (potential malware)
+                color = Colors.RED
+                url = log_entry.get('url', '')
+                outfile = log_entry.get('outfile', '')
+                if url:
+                    extra_info = f" URL: {url}"
+                if outfile:
+                    extra_info += f" File: {outfile}"
+
+            else:
+                # Default - CYAN
+                color = Colors.CYAN
+
+            # Format: [timestamp] [src_ip] message [extra_info]
+            timestamp_short = timestamp.split('T')[1].split('.')[0] if 'T' in timestamp else timestamp
+            print(f"{Colors.BOLD}{timestamp_short}{Colors.END} {color}{src_ip:15s}{Colors.END} {message}{extra_info}")
+
+        except json.JSONDecodeError:
+            # Not JSON, print as-is
+            print(line.strip())
+        except Exception as e:
+            # Any other error, print line as-is
+            print(line.strip())
 
     def restart_services_interactive(self, deployment_name: str = 'default'):
         """
