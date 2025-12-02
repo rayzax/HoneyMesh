@@ -45,9 +45,10 @@
     <li><strong>Docker & Docker Compose</strong> for orchestration</li>
     <li><strong>Cowrie</strong> for SSH/Telnet honeypot</li>
     <li><strong>ELK Stack</strong> (Elasticsearch, Logstash, Kibana) for logging and analysis</li>
-    <li><strong>Python CLI</strong> for management</li>
+    <li><strong>Python CLI</strong> for deployment and management</li>
   </ul>
 </section>
+
 
 
 
