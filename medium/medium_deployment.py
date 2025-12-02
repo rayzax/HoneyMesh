@@ -449,7 +449,7 @@ class MediumDeploymentManager:
 
             # Check for duplicate
             if any(u['username'] == username and u['password'] == password for u in config['users']):
-                print(f"{Colors.RED}User '{username}' and '{password}' already exists{Colors.END}")
+                print(f"{Colors.RED}User '{username}' with password '{password}' already exists{Colors.END}")
                 continue
 
             break
