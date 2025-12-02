@@ -438,6 +438,9 @@ class MediumDeploymentManager:
                 print(f"{Colors.YELLOW}Cancelled{Colors.END}")
                 time.sleep(1)
                 return
+            password = input("Password [password123]: ").strip()
+            if not password:
+                password = "password123"
 
             # Validate username
             if not all(c.isalnum() or c in '_-' for c in username):
@@ -451,9 +454,7 @@ class MediumDeploymentManager:
 
             break
 
-        password = input("Password [password123]: ").strip()
-        if not password:
-            password = "password123"
+        
 
         config['users'].append({
             'username': username,
