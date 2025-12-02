@@ -8,7 +8,8 @@
     <li>User in the docker user group</li>
     <li>Python 3.8+</li>
     <li>4GB RAM minimum (8GB recommended)</li>
-    <li>100GB free disk space</li>
+    <li>Minimum 10GB free disk space</li>
   </ul>
 </section>
+
 
